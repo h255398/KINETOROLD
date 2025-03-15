@@ -235,12 +235,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['pontszam'])) {
         if (in_array(strtolower($file_extension), $video_extensions)) {
             // Ha videó, akkor <video> tag
             echo '<video width="600" controls>
-                <source src="/szakdoga/feltoltesek/' . htmlspecialchars($rowFajl['fajl_nev']) . '" type="video/' . $file_extension . '">
+                <source src="/szakdolgozat31/feltoltesek/' . htmlspecialchars($rowFajl['fajl_nev']) . '" type="video/' . $file_extension . '">
                 Your browser does not support the video tag.
               </video>';
         } else {
             // Ha kép, akkor <img> tag
-            echo '<img src="/szakdoga/feltoltesek/' . htmlspecialchars($rowFajl['fajl_nev']) . '" alt="Fájl kép" width="600">';
+            echo '<img src="/szakdolgozat31/feltoltesek/' . htmlspecialchars($rowFajl['fajl_nev']) . '" alt="Fájl kép" width="600">';
         }
         ?>
 

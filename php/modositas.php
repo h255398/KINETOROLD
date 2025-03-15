@@ -44,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Borítókép kezelése
     if (!empty($_FILES['fokep']['name'])) {
         $fokep = $_FILES['fokep']['name']; // Borítókép neve
-        move_uploaded_file($_FILES['fokep']['tmp_name'], "C:/xampp/htdocs/szakdoga/feltoltesek/" . $fokep); // Fájl feltöltése
+        move_uploaded_file($_FILES['fokep']['tmp_name'], "C:/xampp/htdocs/szakdolgozat31/feltoltesek/" . $fokep); // Fájl feltöltése
     } else {
         $fokep = $project['fokep']; // Ha nincs új kép, megtartjuk a régit
     }
@@ -52,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Médiafájlok feltöltése
 if (!empty($_FILES['media']['name'][0])) {
     foreach ($_FILES['media']['name'] as $key => $name) {
-        $targetPath = "C:/xampp/htdocs/szakdoga/feltoltesek/" . basename($name); // Célmappa
+        $targetPath = "C:/xampp/htdocs/szakdolgozat31/feltoltesek/" . basename($name); // Célmappa
         move_uploaded_file($_FILES['media']['tmp_name'][$key], $targetPath); // Fájl feltöltése
         
         // Fájl típusának meghatározása
@@ -82,7 +82,7 @@ if (!empty($_FILES['media']['name'][0])) {
             $fileName = $resultFileName->fetch_assoc()['fajl_nev'];
 
             // Fájl törlése a feltöltések mappából
-            $filePath = "C:/xampp/htdocs/szakdoga/feltoltesek/" . $fileName;
+            $filePath = "C:/xampp/htdocs/szakdolgozat31/feltoltesek/" . $fileName;
             if (file_exists($filePath)) {
                 unlink($filePath); // Fájl törlése
             }
@@ -228,13 +228,13 @@ if (!empty($_FILES['media']['name'][0])) {
                         <div class="media-item">
                             <?php if (strpos($media['fajl_nev'], '.jpg') !== false || strpos($media['fajl_nev'], '.png') !== false): ?>
                                 <!-- Kép fájl -->
-                                <img src="http://localhost/szakdoga/feltoltesek/<?php echo htmlspecialchars($media['fajl_nev']); ?>" alt="<?php echo htmlspecialchars($media['fajl_nev']); ?>">
+                                <img src="http://localhost/szakdolgozat31/feltoltesek/<?php echo htmlspecialchars($media['fajl_nev']); ?>" alt="<?php echo htmlspecialchars($media['fajl_nev']); ?>">
  <?php elseif (strpos($media['fajl_nev'], '.mp4') !== false || strpos($media['fajl_nev'], '.webm') !== false): ?>
                                 <!-- Videó fájl -->
                                 <?php if ($videoCount < 3): ?>
                                     <div class="video-container">
                                     <video width="200" controls>
-    <source src="http://localhost/szakdoga/feltoltesek/<?php echo htmlspecialchars($media['fajl_nev']); ?>" type="video/<?php echo pathinfo($media['fajl_nev'], PATHINFO_EXTENSION); ?>">
+    <source src="http://localhost/szakdolgozat31/feltoltesek/<?php echo htmlspecialchars($media['fajl_nev']); ?>" type="video/<?php echo pathinfo($media['fajl_nev'], PATHINFO_EXTENSION); ?>">
     A böngésződ nem támogatja a videólejátszást.
 </video>
 
@@ -274,7 +274,7 @@ if (!empty($_FILES['media']['name'][0])) {
                 ?>
                     <div class="media-item">
                         <?php if (strpos($media['fajl_nev'], '.jpg') !== false || strpos($media['fajl_nev'], '.png') !== false): ?>
-                            <img src="http://localhost/szakdoga/feltoltesek/<?php echo htmlspecialchars($media['fajl_nev']); ?>" alt="<?php echo htmlspecialchars($media['fajl_nev']); ?>">
+                            <img src="http://localhost/szakdolgozat31/feltoltesek/<?php echo htmlspecialchars($media['fajl_nev']); ?>" alt="<?php echo htmlspecialchars($media['fajl_nev']); ?>">
  <?php else: ?>
                             <p><?php echo htmlspecialchars($media['fajl_nev']); ?></p>
                         <?php endif; ?>

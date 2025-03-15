@@ -68,7 +68,7 @@
             while ($row = $result->fetch_assoc()) {
                 echo '<div class="project-box">';
                 echo '<a href="projekt_reszletek.php?id=' . $row['id'] . '">';
-                echo '<img src="/szakdoga/feltoltesek/' . htmlspecialchars($row['fokep']) . '" alt="' . htmlspecialchars($row['nev']) . '">';
+                echo '<img src="/szakdolgozat31/feltoltesek/' . htmlspecialchars($row['fokep']) . '" alt="' . htmlspecialchars($row['nev']) . '">';
 
                 // Projekt név megjelenítése
                 $projectName = htmlspecialchars($row['nev']);

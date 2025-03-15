@@ -142,7 +142,7 @@ if (!isset($_SESSION['felhasznalonev'])) {
                 // Feltöltésre kerülő fájlok kezelése
                 $coverImageName = $_FILES['cover_image']['name'];
                 $coverImageTmpName = $_FILES['cover_image']['tmp_name'];
-                $coverImageTarget = "C:/xampp/htdocs/szakdoga/feltoltesek/" . basename($coverImageName);
+                $coverImageTarget = "C:/xampp/htdocs/szakdolgozat31/feltoltesek/" . basename($coverImageName);
                 // Ellenőrizzük, hogy a fájl ténylegesen létezik-e
                 if (!file_exists($coverImageTmpName)) {
                     die("Hiba: A feltöltött borítókép nem létezik!");
@@ -160,7 +160,7 @@ if (!isset($_SESSION['felhasznalonev'])) {
                 foreach ($_FILES['files']['name'] as $index => $fileName) {
                     $fileTmpName = $_FILES['files']['tmp_name'][$index];
                     $fileType = (strpos($_FILES['files']['type'][$index], 'image') !== false) ? 'kep' : 'video';
-                    $targetDir = "C:/xampp/htdocs/szakdoga/feltoltesek/";
+                    $targetDir = "C:/xampp/htdocs/szakdolgozat31/feltoltesek/";
                     $fileTarget = $targetDir . basename($fileName);
 
                     if (move_uploaded_file($fileTmpName, $fileTarget)) {
