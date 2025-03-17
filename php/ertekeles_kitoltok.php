@@ -10,7 +10,7 @@ session_start(); // Session indítása
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Reszponzív beállítások a mobil eszközökhöz -->
     <title>Értékelés - Projektértékelő</title> <!-- Az oldal címe -->
-    <link rel="stylesheet" href="../css2/ertekeles_kitoltok.css?v=1.2"> <!-- Külső CSS fájl hozzáadása -->
+    <link rel="stylesheet" href="../css2/ertekeles_kitoltok.css?v=1.4"> <!-- Külső CSS fájl hozzáadása -->
 </head>
 
 <body>

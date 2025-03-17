@@ -53,8 +53,8 @@
 
                 // Projekt neve rövidítése, ha túl hosszú
                 $projectName = htmlspecialchars($row['nev']);
-                if (strlen($projectName) > 10) {  // 30 karakterre rövidítjük, ez állítható igény szerint
-                    $projectName = substr($projectName, 0, 10) . '...';
+                if (strlen($projectName) > 17) {  // 30 karakterre rövidítjük, ez állítható igény szerint
+                    $projectName = substr($projectName, 0, 17) . '...';
                 }
 
                 echo '<div class="project-name"><a href="nyilvanos_reszletek.php?projekt_id=' . urlencode($row['id']) . '">' . $projectName . '</a></div>'; // Linkként visszaállítva

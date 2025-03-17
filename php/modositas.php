@@ -321,7 +321,7 @@ if (!empty($_FILES['media']['name'][0])) {
                 <input type="checkbox" name="edit_questions[<?php echo $question['id']; ?>][required]" 
                     id="edit_questions_<?php echo $question['id']; ?>_kotelezo"
                     <?php echo $question['required'] ? 'checked' : ''; ?>>
-                <button type="button" id="remove-button" onclick="removeQuestion(this)">Eltávolítás</button>
+                <button type="button" class="remove-button" onclick="removeQuestion(this)">Eltávolítás</button>
                 <input type="hidden" name="delete_questions[]" value="<?php echo $question['id']; ?>" class="delete-flag" disabled>
             </div>
         <?php endwhile; ?>
@@ -367,7 +367,7 @@ function addQuestion() {
         <label for="new_questions[${index}][required]">Kötelező?</label>
         <input type="checkbox" name="new_questions[${index}][required]">
         
-        <button type="button" onclick="removeQuestion(this)">Eltávolítás</button>
+        <button type="button" class="remove-button" onclick="removeQuestion(this)">Eltávolítás</button>
     `;
     
     // Kérdés hozzáadása a DOM-ba

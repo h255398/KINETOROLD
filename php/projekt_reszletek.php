@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Projekt Részletek - Projektértékelő</title>
     <link rel="stylesheet" href="../css2/kezdolap.css?v=1.1">
-    <link rel="stylesheet" href="../css2/projekt_reszletek.css?v=1.2">
+    <link rel="stylesheet" href="../css2/projekt_reszletek.css?v=1.4">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
 </head>

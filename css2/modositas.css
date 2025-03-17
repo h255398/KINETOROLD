@@ -163,10 +163,10 @@ button:hover {
 }
 
 /* kérdéseltávolítás gomb */
-#remove-button {
+.remove-button {
   background-color: red; /* piros háttér*/
 }
 /* kérdéseltávolítás gomb ha egeret fölé visszük */
-#remove-button:hover {
+.remove-button:hover {
   background-color: darkred; /* sötétebb piros*/
 }

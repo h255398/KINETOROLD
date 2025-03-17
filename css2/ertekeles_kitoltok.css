@@ -38,12 +38,15 @@ form {
   flex-direction: column; /* egymás alá */
   gap: 15px; /* térköz*/
 }
-
+/* instrukció */
+.instructions{
+  margin-bottom: 10px; /* alsó margó */
+}
 /* kérdéstípusok */
 input[type="text"],
 input[type="number"],
 select {
-  width: 100%; /* teljes szélesség */
+  width: 90%; /* teljes szélesség */
   padding: 10px; /* 10px belső margó */
   border: 1px solid #ccc; /* világos szürke szegély */
   border-radius: 4px; /* lekerekített sarkok */
