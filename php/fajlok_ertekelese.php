@@ -220,7 +220,7 @@ if ($total_files >= 10 && $current_file == $felso_hatar) {
         <h1>Köszönöm, hogy értékelésével segíti a szakdolgozatomat</h1>
     </header>
     <div class="container">
-        <p>Kérjük, értékelje a fájlt!</p>
+        <p>Kérjük, értékelje a fájlt!</p> <strong>1-es a legrosszabb értékelés, 5-ös a legjobb értékelés.</strong> 
         <h3><?php echo "$current_file / $total_files"; ?></h3>
 
         <?php

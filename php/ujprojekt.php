@@ -34,13 +34,13 @@ if (!isset($_SESSION['felhasznalonev'])) {
             
             <label for="type">Típus:</label>
             <select name="questions[${index}][valasz_tipus]" required onchange="toggleRequiredField(this)">
-                <option value="int">Int</option>
-                <option value="enum">Enum</option>
+                <option value="int">Szám</option>
+                <option value="enum">Választásos</option>
                 <option value="text">Szöveg</option>
             </select>
 
             <div class="enum-options" style="display: none;">
-                <label for="options">Választék (enum esetén):</label>
+                <label for="options">Választék (választásos esetén):</label>
                 <input type="text" name="questions[${index}][lehetseges_valaszok]" placeholder="Példa: Igen, Nem">
             </div>
 

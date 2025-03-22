@@ -304,13 +304,13 @@ if (!empty($_FILES['media']['name'][0])) {
                 <select name="edit_questions[<?php echo $question['id']; ?>][valasz_tipus]" 
                         id="edit_questions_<?php echo $question['id']; ?>_tipus" 
                         onchange="toggleEnumOptions(this)">
-                    <option value="int" <?php echo ($question['valasz_tipus'] === 'int') ? 'selected' : ''; ?>>Int</option>
-                    <option value="enum" <?php echo ($question['valasz_tipus'] === 'enum') ? 'selected' : ''; ?>>Enum</option>
+                    <option value="int" <?php echo ($question['valasz_tipus'] === 'int') ? 'selected' : ''; ?>>Szám</option>
+                    <option value="enum" <?php echo ($question['valasz_tipus'] === 'enum') ? 'selected' : ''; ?>>Választásos</option>
                     <option value="text" <?php echo ($question['valasz_tipus'] === 'text') ? 'selected' : ''; ?>>Szöveg</option>
                 </select>
 
                 <div class="enum-options" style="display: <?php echo ($question['valasz_tipus'] === 'enum') ? 'block' : 'none'; ?>;">
-                    <label for="edit_questions_<?php echo $question['id']; ?>_enum">Választék (enum esetén):</label>
+                    <label for="edit_questions_<?php echo $question['id']; ?>_enum">Választék (választásos esetén):</label>
                     <input type="text" name="edit_questions[<?php echo $question['id']; ?>][lehetseges_valaszok]" 
                         id="edit_questions_<?php echo $question['id']; ?>_enum" 
                         value="<?php echo htmlspecialchars($question['lehetseges_valaszok'] ?? ''); ?>" 
@@ -353,8 +353,8 @@ function addQuestion() {
         
         <label for="new_questions[${index}][valasz_tipus]">Típus:</label>
         <select name="new_questions[${index}][valasz_tipus]" onchange="toggleEnumOptions(this)">
-            <option value="int">Int</option>
-            <option value="enum">Enum</option>
+            <option value="int">Szám</option>
+            <option value="enum">Választásos</option>
             <option value="text">Szöveg</option>
         </select>
         
