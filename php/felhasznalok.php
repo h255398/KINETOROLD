@@ -67,7 +67,7 @@ $result = $conn->query($sql);
                 <tr>
                     <th>Felhasználónév</th>
                     <th>Email cím</th>
-                    <th>Akciók</th>
+                    <th>Letiltás</th>
                 </tr>
             </thead>
             <tbody>
