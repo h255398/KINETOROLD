@@ -84,7 +84,7 @@ while ($fileData = $filesResult->fetch_assoc()) {
         $drawing->setWorksheet($filesSheet);
 
         // Fájlra mutató hiperhivatkozás beállítása
-        $fileUrl = "http://localhost/szakdolgozat31/feltoltesek/" . $fileData['fajl_nev']; // A teljes URL
+        $fileUrl = "../feltoltesek/" . $fileData['fajl_nev']; // A teljes URL
 
         // Hiperhivatkozás az új oszlopba
         $filesSheet->setCellValue('E' . $row, 'Megnyitás');

@@ -7,6 +7,8 @@ if (!isset($_SESSION['felhasznalonev'])) {
     exit();
 }
 
+include '../setup.php';
+
 // Adatbázis kapcsolat beállítása
 $servername = "localhost"; // Adatbázis szerver
 $username = "root"; // Felhasználónév
@@ -18,6 +20,7 @@ $conn = new mysqli($servername, $username, $password, $dbname);
 if ($conn->connect_error) {
     die("Kapcsolódás hiba: " . $conn->connect_error); // Hibaüzenet, ha nem sikerül a kapcsolat
 }
+
 
 // Projekt ID lekérdezése a GET paraméterből
 $projektId = $_GET['id'];
@@ -228,13 +231,13 @@ if (!empty($_FILES['media']['name'][0])) {
                         <div class="media-item">
                             <?php if (strpos($media['fajl_nev'], '.jpg') !== false || strpos($media['fajl_nev'], '.png') !== false): ?>
                                 <!-- Kép fájl -->
-                                <img src="http://localhost/szakdolgozat31/feltoltesek/<?php echo htmlspecialchars($media['fajl_nev']); ?>" alt="<?php echo htmlspecialchars($media['fajl_nev']); ?>">
+                                <img src="../feltoltesek/<?php echo htmlspecialchars($media['fajl_nev']); ?>" alt="<?php echo htmlspecialchars($media['fajl_nev']); ?>">
  <?php elseif (strpos($media['fajl_nev'], '.mp4') !== false || strpos($media['fajl_nev'], '.webm') !== false): ?>
                                 <!-- Videó fájl -->
                                 <?php if ($videoCount < 3): ?>
                                     <div class="video-container">
                                     <video width="200" controls>
-    <source src="http://localhost/szakdolgozat31/feltoltesek/<?php echo htmlspecialchars($media['fajl_nev']); ?>" type="video/<?php echo pathinfo($media['fajl_nev'], PATHINFO_EXTENSION); ?>">
+    <source src="../feltoltesek/<?php echo htmlspecialchars($media['fajl_nev']); ?>" type="video/<?php echo pathinfo($media['fajl_nev'], PATHINFO_EXTENSION); ?>">
     A böngésződ nem támogatja a videólejátszást.
 </video>
 
@@ -274,7 +277,7 @@ if (!empty($_FILES['media']['name'][0])) {
                 ?>
                     <div class="media-item">
                         <?php if (strpos($media['fajl_nev'], '.jpg') !== false || strpos($media['fajl_nev'], '.png') !== false): ?>
-                            <img src="http://localhost/szakdolgozat31/feltoltesek/<?php echo htmlspecialchars($media['fajl_nev']); ?>" alt="<?php echo htmlspecialchars($media['fajl_nev']); ?>">
+                            <img src="../feltoltesek/<?php echo htmlspecialchars($media['fajl_nev']); ?>" alt="<?php echo htmlspecialchars($media['fajl_nev']); ?>">
  <?php else: ?>
                             <p><?php echo htmlspecialchars($media['fajl_nev']); ?></p>
                         <?php endif; ?>

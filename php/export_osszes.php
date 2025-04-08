@@ -100,7 +100,7 @@ while ($fileData = $filesResult->fetch_assoc()) {
     // Fájl elérési útjának lekérése
     $filePath = "../feltoltesek/" . $fileData['fajl_nev'];  // Fájl elérési útja
     $fileExtension = pathinfo($fileData['fajl_nev'], PATHINFO_EXTENSION);  // Fájl kiterjesztése
-    $fileUrl = "http://localhost/szakdolgozat31/feltoltesek/" . $fileData['fajl_nev']; // Alapértelmezett fájl URL
+    $fileUrl = "../feltoltesek/" . $fileData['fajl_nev']; // Alapértelmezett fájl URL
 
     if (file_exists($filePath)) {
         // Ha a fájl képfájl (pl. jpg, png), akkor kép hozzáadása
