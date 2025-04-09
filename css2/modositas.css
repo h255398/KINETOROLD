@@ -170,3 +170,15 @@ button:hover {
 .remove-button:hover {
   background-color: darkred; /* sötétebb piros*/
 }
+.question-container{
+  border: 1px solid #ddd; 
+  padding: 10px; 
+  margin-bottom: 10px; 
+  border-radius: 5px;
+}
+.custom-question-select{
+  width: 80%;
+  padding: 5px;
+  font-size: 1rem;
+  border-radius: 5px;
+}

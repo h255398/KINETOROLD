@@ -87,6 +87,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     </style>
     <script>
+        const existingQuestions = <?php echo json_encode($letezoKerdesek); ?>
         function addQuestion() {
             const questionContainer = document.createElement('div');
             questionContainer.classList.add('question-container');

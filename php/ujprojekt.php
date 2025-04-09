@@ -1,10 +1,26 @@
 <?php
-session_start(); // Session indítása a fájl elején
+session_start();
 
-// Ellenőrzés, hogy a felhasználó be van-e jelentkezve
 if (!isset($_SESSION['felhasznalonev'])) {
     header("Location: bejelentkezes.php");
     exit();
+}
+
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "szakdoga";
+$conn = new mysqli($servername, $username, $password, $dbname);
+if ($conn->connect_error) {
+    die("Kapcsolódás hiba: " . $conn->connect_error);
+}
+
+// Már meglévő kérdések lekérdezése
+$letezoKerdesek = [];
+$kerdesQuery = "SELECT DISTINCT kerdes FROM kerdesek";
+$kerdesEredmeny = $conn->query($kerdesQuery);
+while ($row = $kerdesEredmeny->fetch_assoc()) {
+    $letezoKerdesek[] = $row['kerdes'];
 }
 ?>
 
@@ -17,40 +33,45 @@ if (!isset($_SESSION['felhasznalonev'])) {
     <title>Új Projekt - Projektértékelő</title>
     <link rel="stylesheet" href="../css2/kezdolap.css?v=1.1">
     <link rel="stylesheet" href="../css2/reg.css?v=1.1">
-    <link rel="stylesheet" href="../css2/ujprojekt.css?v=1.1">
-    <style>
-
-    </style>
+    <link rel="stylesheet" href="../css2/ujprojekt.css?v=1.2">
     <script>
+        const existingQuestions = <?php echo json_encode($letezoKerdesek); ?>;
+
+
         function addQuestion() {
             const questionContainer = document.createElement('div');
             questionContainer.classList.add('question-container');
 
             const index = document.querySelectorAll('.question-container').length;
 
+            const optionsHTML = existingQuestions.map(q => `<option value="${q}">${q}</option>`).join('');
+
             questionContainer.innerHTML = `
-            <label for="question">Kérdés:</label>
-            <input type="text" name="questions[${index}][kerdes]" required>
-            
-            <label for="type">Típus:</label>
-            <select name="questions[${index}][valasz_tipus]" required onchange="toggleRequiredField(this)">
-                <option value="int">Szám</option>
-                <option value="enum">Választásos</option>
-                <option value="text">Szöveg</option>
-            </select>
+                <label>Kérdés:</label>
+                <select class="custom-question-select" onchange="toggleCustomQuestion(this, ${index})">
+                    <option value="">-- Új kérdés --</option>
+                    ${optionsHTML}
+                </select>
+                <input type="text" name="questions[${index}][kerdes]" required placeholder="Írd be az új kérdést">
 
-            <div class="enum-options" style="display: none;">
-                <label for="options">Választék (választásos esetén):</label>
-                <input type="text" name="questions[${index}][lehetseges_valaszok]" placeholder="Példa: Igen, Nem">
-            </div>
+                <label for="type">Típus:</label>
+                <select name="questions[${index}][valasz_tipus]" required onchange="toggleRequiredField(this)">
+                    <option value="int">Szám</option>
+                    <option value="enum">Választásos</option>
+                    <option value="text">Szöveg</option>
+                </select>
 
-            <label for="required">Kötelező?</label>
-            <input type="checkbox" name="questions[${index}][required]" onchange="toggleRequiredField(this)">
-            
-            <button type="button" class="remove-question" onclick="removeQuestion(this)">Eltávolítás</button>
-        `;
+                <div class="enum-options" style="display: none;">
+                    <label for="options">Választék (választásos esetén):</label>
+                    <input type="text" name="questions[${index}][lehetseges_valaszok]" placeholder="Példa: Igen, Nem">
+                </div>
 
-            // A típus változása esetén kezeljük a megfelelő mezőt
+                <label for="required">Kötelező?</label>
+                <input type="checkbox" name="questions[${index}][required]" onchange="toggleRequiredField(this)">
+
+                <button type="button" class="remove-question" onclick="removeQuestion(this)">Eltávolítás</button>
+            `;
+
             questionContainer.querySelector('select[name="questions[' + index + '][valasz_tipus]"]').addEventListener('change', function () {
                 const enumOptions = questionContainer.querySelector('.enum-options');
                 enumOptions.style.display = this.value === 'enum' ? 'block' : 'none';
@@ -59,26 +80,28 @@ if (!isset($_SESSION['felhasznalonev'])) {
             document.getElementById('questions').appendChild(questionContainer);
         }
 
+        function toggleCustomQuestion(selectElem, index) {
+            const container = selectElem.closest('.question-container');
+            const input = container.querySelector(`input[name="questions[${index}][kerdes]"]`);
+            input.value = selectElem.value;
+            input.disabled = selectElem.value !== '';
+        }
+
         function removeQuestion(button) {
             button.parentElement.remove();
         }
 
-        function toggleRequiredField(checkbox) {
-            const questionContainer = checkbox.closest('.question-container');
-            const requiredCheckbox = questionContainer.querySelector('input[name$="[required]"]');
-
-            if (checkbox.type === 'checkbox') {
-                const textField = questionContainer.querySelector('input[type="text"]');
-                textField.required = requiredCheckbox.checked;
+        function toggleRequiredField(elem) {
+            const questionContainer = elem.closest('.question-container');
+            const enumOptions = questionContainer.querySelector('.enum-options');
+            if (elem.tagName === 'SELECT') {
+                enumOptions.style.display = elem.value === 'enum' ? 'block' : 'none';
             }
         }
     </script>
-
-
 </head>
 
 <body>
-
     <header>
         <h1>Projektértékelő</h1>
         <div class="auth-links">
@@ -103,7 +126,6 @@ if (!isset($_SESSION['felhasznalonev'])) {
                 <label for="cover_image">Főkép:</label>
                 <input type="file" id="cover_image" name="cover_image" accept="image/*" required>
 
-                <!-- Új mező videók feltöltéséhez -->
                 <label for="files">Feltöltendő fájlok (Kép vagy Videó):</label>
                 <input type="file" id="files" name="files[]" multiple accept="image/*,video/*">
 
@@ -121,98 +143,66 @@ if (!isset($_SESSION['felhasznalonev'])) {
             </form>
 
             <?php
-            // Kapcsolódás az adatbázishoz
-            $servername = "localhost";
-            $username = "root";
-            $password = "";
-            $dbname = "szakdoga";
-
-            // Kapcsolódás az adatbázishoz
-            $conn = new mysqli($servername, $username, $password, $dbname);
-            if ($conn->connect_error) {
-                die("Kapcsolódás hiba: " . $conn->connect_error);
-            }
-            // Ha POST kérés érkezik
             if ($_SERVER["REQUEST_METHOD"] == "POST") {
-                // Projekt adatok
                 $projectName = $conn->real_escape_string($_POST['project_name']);
                 $projectDescription = $conn->real_escape_string($_POST['project_description']);
                 $kitoltesiCel = (int) $_POST['kitoltesi_cel'];
 
-                // Feltöltésre kerülő fájlok kezelése
                 $coverImageName = $_FILES['cover_image']['name'];
                 $coverImageTmpName = $_FILES['cover_image']['tmp_name'];
                 $coverImageTarget = "C:/xampp/htdocs/szakdolgozat31/feltoltesek/" . basename($coverImageName);
-                // Ellenőrizzük, hogy a fájl ténylegesen létezik-e
+
                 if (!file_exists($coverImageTmpName)) {
                     die("Hiba: A feltöltött borítókép nem létezik!");
                 }
 
-                // Próbáljuk meg átmásolni a borítóképet a feltoltesek mappába
-                if (move_uploaded_file($coverImageTmpName, $coverImageTarget)) {
-                    echo "A borítókép sikeresen feltöltve!";
-                } else {
+                if (!move_uploaded_file($coverImageTmpName, $coverImageTarget)) {
                     die("Hiba a borítókép feltöltésekor!");
                 }
 
-                // Fájlok kezelése (képek és videók)
                 $uploadedFiles = [];
                 foreach ($_FILES['files']['name'] as $index => $fileName) {
                     $fileTmpName = $_FILES['files']['tmp_name'][$index];
                     $fileType = (strpos($_FILES['files']['type'][$index], 'image') !== false) ? 'kep' : 'video';
-                    $targetDir = "C:/xampp/htdocs/szakdolgozat31/feltoltesek/";
-                    $fileTarget = $targetDir . basename($fileName);
+                    $fileTarget = "C:/xampp/htdocs/szakdolgozat31/feltoltesek/" . basename($fileName);
 
                     if (move_uploaded_file($fileTmpName, $fileTarget)) {
                         $uploadedFiles[] = ['fileName' => $fileName, 'type' => $fileType];
-                    } else {
-                        echo "Hiba a fájl feltöltésekor: " . $fileName;
                     }
                 }
 
-                // Projekt adatainak mentése
                 $felhasznalonev = $_SESSION['felhasznalonev'];
                 $sqlUser = "SELECT id FROM felhasznalok WHERE felhasznalonev = '$felhasznalonev'";
                 $resultUser = $conn->query($sqlUser);
-                $rowUser = $resultUser->fetch_assoc();
-                $userId = $rowUser['id'];
+                $userId = $resultUser->fetch_assoc()['id'];
 
-                // Projekt adatainak mentése a projektek táblába
                 $sqlProject = "INSERT INTO projektek (felhasznalok_id, nev, leiras, fokep, kitoltesi_cel) 
-                   VALUES ('$userId', '$projectName', '$projectDescription', '$coverImageName', '$kitoltesiCel')";
-
-
-
-
-
+                               VALUES ('$userId', '$projectName', '$projectDescription', '$coverImageName', '$kitoltesiCel')";
 
                 if ($conn->query($sqlProject) === TRUE) {
-                    // Projekt sikeresen létrehozva, most a fájlokat mentjük el a 'fajlok' táblába
-                    $projectId = $conn->insert_id;  // Az éppen létrehozott projekt ID-ja
-            
-                    //kerdesek mentese
+                    $projectId = $conn->insert_id;
+
                     if (!empty($_POST['questions'])) {
                         foreach ($_POST['questions'] as $question) {
                             $kerdes = $conn->real_escape_string($question['kerdes']);
                             $valaszTipus = $conn->real_escape_string($question['valasz_tipus']);
                             $lehetsegesValaszok = isset($question['lehetseges_valaszok']) ? $conn->real_escape_string($question['lehetseges_valaszok']) : NULL;
-                            $required = isset($question['required']) ? 1 : 0; // Kötelező kérdés
-            
+                            $required = isset($question['required']) ? 1 : 0;
+
                             $sqlQuestion = "INSERT INTO kerdesek (projekt_id, kerdes, valasz_tipus, lehetseges_valaszok, required) 
-                        VALUES ('$projectId', '$kerdes', '$valaszTipus', '$lehetsegesValaszok', '$required')";
+                                            VALUES ('$projectId', '$kerdes', '$valaszTipus', '$lehetsegesValaszok', '$required')";
                             $conn->query($sqlQuestion);
                         }
                     }
-                    //fajlok
+
                     foreach ($uploadedFiles as $file) {
                         $fileName = $file['fileName'];
                         $fileType = $file['type'];
                         $sqlFile = "INSERT INTO fajlok (projekt_id, fajl_nev, tipus) 
-                        VALUES ('$projectId', '$fileName', '$fileType')";
+                                    VALUES ('$projectId', '$fileName', '$fileType')";
                         $conn->query($sqlFile);
                     }
 
-                    // Sikeres projekt létrehozása
                     echo "<script>alert('Sikeres projekt létrehozás!');</script>";
                     echo "<script>window.location.href = 'projektjeim.php';</script>";
                     exit();
@@ -223,7 +213,6 @@ if (!isset($_SESSION['felhasznalonev'])) {
             ?>
         </div>
     </div>
-
 </body>
 
 </html>

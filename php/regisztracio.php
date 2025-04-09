@@ -79,7 +79,7 @@
             echo "<script>alert('A felhasználónév már foglalt. Kérlek válassz másikat!');</script>";
         } elseif ($checkEmailResult->num_rows > 0) {
             // Ha az e-mail cím már regisztrálva van
-            echo "<script>alert('Ez az email cím már regisztrálva van!');</script>";
+            echo "<script>alert('Ez az e-mail cím már regisztrálva van!');</script>";
         } else {
             // Ha nincs probléma, akkor végrehajtjuk a regisztrációt
             $sql = "INSERT INTO felhasznalok (felhasznalonev, email, jelszo) 
