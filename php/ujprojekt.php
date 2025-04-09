@@ -53,6 +53,9 @@ while ($row = $kerdesEredmeny->fetch_assoc()) {
                     ${optionsHTML}
                 </select>
                 <input type="text" name="questions[${index}][kerdes]" required placeholder="Írd be az új kérdést">
+<!-- Rejtett input a kérdés tárolására -->
+<input type="hidden" name="questions[${index}][hidden_kerdes]" value="">
+
 
                 <label for="type">Típus:</label>
                 <select name="questions[${index}][valasz_tipus]" required onchange="toggleRequiredField(this)">
@@ -81,11 +84,22 @@ while ($row = $kerdesEredmeny->fetch_assoc()) {
         }
 
         function toggleCustomQuestion(selectElem, index) {
-            const container = selectElem.closest('.question-container');
-            const input = container.querySelector(`input[name="questions[${index}][kerdes]"]`);
-            input.value = selectElem.value;
-            input.disabled = selectElem.value !== '';
-        }
+    const container = selectElem.closest('.question-container');
+    const input = container.querySelector(`input[name="questions[${index}][kerdes]"]`);
+    const hiddenInput = container.querySelector(`input[name="questions[${index}][hidden_kerdes]"]`); // új rejtett input
+
+    // Ha van választás a legördülő menüből
+    if (selectElem.value !== '') {
+        input.value = selectElem.value;
+        hiddenInput.value = selectElem.value; // Frissítjük a rejtett mezőt
+    } else {
+        input.value = ''; // Ha az "Új kérdés" opció van kiválasztva, akkor üres lesz
+        hiddenInput.value = ''; // Frissítjük a rejtett mezőt is
+    }
+
+    input.disabled = selectElem.value !== ''; // Ha van kiválasztott kérdés, akkor az input mező ne legyen szerkeszthető
+}
+
 
         function removeQuestion(button) {
             button.parentElement.remove();
@@ -184,15 +198,16 @@ while ($row = $kerdesEredmeny->fetch_assoc()) {
 
                     if (!empty($_POST['questions'])) {
                         foreach ($_POST['questions'] as $question) {
-                            $kerdes = $conn->real_escape_string($question['kerdes']);
+                            $kerdes = !empty($question['hidden_kerdes']) ? $conn->real_escape_string($question['hidden_kerdes']) : $conn->real_escape_string($question['kerdes']);
                             $valaszTipus = $conn->real_escape_string($question['valasz_tipus']);
                             $lehetsegesValaszok = isset($question['lehetseges_valaszok']) ? $conn->real_escape_string($question['lehetseges_valaszok']) : NULL;
                             $required = isset($question['required']) ? 1 : 0;
-
+                        
                             $sqlQuestion = "INSERT INTO kerdesek (projekt_id, kerdes, valasz_tipus, lehetseges_valaszok, required) 
                                             VALUES ('$projectId', '$kerdes', '$valaszTipus', '$lehetsegesValaszok', '$required')";
                             $conn->query($sqlQuestion);
                         }
+                        
                     }
 
                     foreach ($uploadedFiles as $file) {
