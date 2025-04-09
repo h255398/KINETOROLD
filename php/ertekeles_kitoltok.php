@@ -6,9 +6,29 @@ session_start(); // Session indítása
 <head>
     <meta charset="UTF-8"> <!-- Az oldal karakterkódolása UTF-8 -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Reszponzív beállítások a mobil eszközökhöz -->
     <title>Értékelés - Projektértékelő</title> <!-- Az oldal címe -->
-    <link rel="stylesheet" href="../css2/ertekeles_kitoltok.css?v=1.4"> <!-- Külső CSS fájl hozzáadása -->
+    <link rel="stylesheet" href="../css2/ertekeles_kitoltok.css?v=1.6"> <!-- Külső CSS fájl hozzáadása -->
+    <script>
+        // Ellenőrzés a "Tovább" gomb előtt
+        function validateForm() {
+            // Ellenőrizzük, hogy a checkbox be van pipálva
+            var acceptAszf = document.getElementById("accept-aszf").checked;
+            if (!acceptAszf) {
+                alert("Az ÁSZF-et el kell fogadni a továbblépéshez!");
+                return false;
+            }
+            
+            // Ellenőrizzük, hogy minden kötelező válasz meg van adva
+            var inputs = document.querySelectorAll('input[required], select[required], textarea[required]');
+            for (var i = 0; i < inputs.length; i++) {
+                if (inputs[i].value === "") {
+                    alert("Minden kötelező kérdésre válaszolni kell!");
+                    return false;
+                }
+            }
+            return true;  // Ha minden oké, tovább léphet
+        }
+    </script>
 </head>
 <body>
     <header>
@@ -16,6 +36,16 @@ session_start(); // Session indítása
     </header>
     <div class="container"> <!-- A tartalom konténer -->
         <div class="instructions">Kérjük, töltse ki a kitöltés előtt az alábbiakat:</div>
+
+        <!-- ÁSZF link és elfogadás -->
+        <div class="checkbox-container">
+            <label>
+                <a href="../html/aszf.html" target="_blank" style="padding: 10px;;">Általános Szerződési Feltételek (ÁSZF) elolvasása</a>
+            </label><br>
+            <input type="checkbox" id="accept-aszf" name="accept-aszf" required > 
+            <label for="accept-aszf">Elfogadom az ÁSZF-et</label>
+        </div>
+
         <!-- Utasítások a felhasználónak -->
         <?php
         // Ellenőrizzük, hogy a projekt_id paraméter létezik-e a GET kérésben
@@ -63,7 +93,7 @@ session_start(); // Session indítása
             echo '<p>Itt nincs kérdés.</p>';  // Ha nincsenek kérdések, üzenet megjelenítése
         }
         // Kérdések és válaszok megjelenítése
-        echo '<form action="" method="post">';  // Form létrehozása
+        echo '<form action="" method="post" onsubmit="return validateForm()">';  // Form létrehozása
         while ($row = $result->fetch_assoc()) {  // Minden kérdés végigolvasása
             $kerdes = htmlspecialchars($row['kerdes']);  // Kérdés kinyerése
             $required = $row['required'];  // Kötelező kérdés-e (0 vagy 1)
