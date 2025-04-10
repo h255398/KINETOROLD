@@ -76,7 +76,7 @@
                 if ($fileType == 'kep') {
                     // Kép fájlok kezelése
                     echo '<div class="media-item">';
-                    echo '<img src="/szakdolgozat31/feltoltesek/' . htmlspecialchars($fileName) . '" alt="' . htmlspecialchars($fileName) . '">';
+                    echo '<img src="../feltoltesek/' . htmlspecialchars($fileName) . '" alt="' . htmlspecialchars($fileName) . '">';
                     echo '</div>';
                     $mediaCount++;
                 } elseif ($fileType == 'video') {
@@ -85,7 +85,7 @@
                     if (in_array($ext, ['mp4', 'webm', 'ogg'])) {
                         echo '<div class="media-item">';
                         echo '<video controls>';
-                        echo '<source src="/szakdolgozat31/feltoltesek/' . htmlspecialchars($fileName) . '" type="video/' . $ext . '">';
+                        echo '<source src="../feltoltesek/' . htmlspecialchars($fileName) . '" type="video/' . $ext . '">';
                         echo 'A böngésződ nem támogatja a videó lejátszást.';
                         echo '</video>';
                         echo '</div>';
@@ -214,7 +214,7 @@
             echo '<div class="top-kepek">';
             while ($kep = $topKepekResult->fetch_assoc()) {
                 echo '<div class="top-kep">';
-                echo '<img src="/szakdolgozat31/feltoltesek/' . htmlspecialchars($kep['fajl_nev']) . '" alt="Legjobbra értékelt kép">';
+                echo '<img src="../feltoltesek/' . htmlspecialchars($kep['fajl_nev']) . '" alt="Legjobbra értékelt kép">';
                 echo '<p>Átlagos értékelés: ' . number_format($kep['atlag_pontszam'], 2) . '</p>';
                 echo '</div>';
             }

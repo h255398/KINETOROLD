@@ -41,7 +41,7 @@
             while ($row = $result->fetch_assoc()) {
                 echo '<div class="project-box" id="project-box-small">';
                 echo '<a href="nyilvanos_reszletek.php?projekt_id=' . urlencode($row['id']) . '">';
-                echo '<img src="/szakdolgozat31/feltoltesek/' . htmlspecialchars($row['fokep']) . '" alt="' . htmlspecialchars($row['nev']) . '">';
+                echo '<img src="../feltoltesek/' . htmlspecialchars($row['fokep']) . '" alt="' . htmlspecialchars($row['nev']) . '">';
 
                 // Projekt neve rövidítése, ha túl hosszú
                 $projectName = htmlspecialchars($row['nev']);

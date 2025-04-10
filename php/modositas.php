@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Borítókép kezelése
     if (!empty($_FILES['fokep']['name'])) {
         $fokep = $_FILES['fokep']['name']; // Borítókép neve
-        move_uploaded_file($_FILES['fokep']['tmp_name'], "C:/xampp/htdocs/szakdolgozat31/feltoltesek/" . $fokep); // Fájl feltöltése
+        move_uploaded_file($_FILES['fokep']['tmp_name'], "../feltoltesek/" . $fokep); // Fájl feltöltése
     } else {
         $fokep = $project['fokep']; // Ha nincs új kép, megtartjuk a régit
     }
@@ -56,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Médiafájlok feltöltése
 if (!empty($_FILES['media']['name'][0])) {
     foreach ($_FILES['media']['name'] as $key => $name) {
-        $targetPath = "C:/xampp/htdocs/szakdolgozat31/feltoltesek/" . basename($name); // Célmappa
+        $targetPath = "../feltoltesek/" . basename($name); // Célmappa
         move_uploaded_file($_FILES['media']['tmp_name'][$key], $targetPath); // Fájl feltöltése
         
         // Fájl típusának meghatározása
@@ -86,7 +86,7 @@ if (!empty($_FILES['media']['name'][0])) {
             $fileName = $resultFileName->fetch_assoc()['fajl_nev'];
 
             // Fájl törlése a feltöltések mappából
-            $filePath = "C:/xampp/htdocs/szakdolgozat31/feltoltesek/" . $fileName;
+            $filePath = "../feltoltesek/" . $fileName;
             if (file_exists($filePath)) {
                 unlink($filePath); // Fájl törlése
             }

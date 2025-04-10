@@ -33,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_files'])) {
                 $fileName = $resultFileName->fetch_assoc()['fajl_nev'];
 
                 // Fájl törlése a feltöltések mappából
-                $filePath = "feltoltesek/" . $fileName;
+                $filePath = "../feltoltesek/" . $fileName;
                 if (file_exists($filePath)) {
                     unlink($filePath); // Fájl törlése
                 }

@@ -47,7 +47,7 @@ if (in_array(['tipus' => 'kep'], $file_types)) {
     foreach ($top_images as $image) {
         $media_section .= '
             <div>
-                <img src="/szakdolgozat31/feltoltesek/' . htmlspecialchars($image['fajl_nev']) . '" alt="Top Kép">
+                <img src="../feltoltesek/' . htmlspecialchars($image['fajl_nev']) . '" alt="Top Kép">
                 <p>Átlag pontszám: ' . $image['atlag_pontszam'] . '</p>
             </div>';
     }
@@ -76,7 +76,7 @@ elseif (in_array(['tipus' => 'video'], $file_types)) {
         $media_section .= '
             <div>
                 <video width="200" controls>
-                    <source src="/szakdolgozat31/feltoltesek/' . htmlspecialchars($video['fajl_nev']) . '" type="video/mp4">
+                    <source src="../feltoltesek/' . htmlspecialchars($video['fajl_nev']) . '" type="video/mp4">
                     Your browser does not support the video tag.
                 </video>
                 <p>Átlag pontszám: ' . $video['atlag_pontszam'] . '</p>
