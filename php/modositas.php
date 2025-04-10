@@ -10,16 +10,7 @@ if (!isset($_SESSION['felhasznalonev'])) {
 
 
 // Adatbázis kapcsolat beállítása
-$servername = "localhost"; // Adatbázis szerver
-$username = "root"; // Felhasználónév
-$password = ""; // Jelszó
-$dbname = "szakdoga"; // Adatbázis neve
-
-// Kapcsolódás az adatbázishoz
-$conn = new mysqli($servername, $username, $password, $dbname);
-if ($conn->connect_error) {
-    die("Kapcsolódás hiba: " . $conn->connect_error); // Hibaüzenet, ha nem sikerül a kapcsolat
-}
+require_once "db_connect.php";
 
 
 // Projekt ID lekérdezése a GET paraméterből

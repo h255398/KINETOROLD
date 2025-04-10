@@ -95,15 +95,8 @@ ob_start(); // Kimenet pufferelése
             exit(); // Kilépés a scriptből
         }
         // Kapcsolódás az adatbázishoz
-        $servername = "localhost";  // Adatbázis szerver
-        $username = "root";  // Felhasználónév
-        $password = "";  // Jelszó
-        $dbname = "szakdoga";  // Adatbázis neve
-        // Kapcsolat létrehozása
-        $conn = new mysqli($servername, $username, $password, $dbname);
-        if ($conn->connect_error) {
-            die("Kapcsolódás hiba: " . $conn->connect_error);  // Ha hiba van, kilépés és hibaüzenet
-        }
+        require_once "db_connect.php";
+
         // Ellenőrizzük, hogy van-e már kitolto_id a session-ben
         if (!isset($_SESSION['kitolto_id_' . $projekt_id])) {
             // Ha nincs, beszúrjuk az új kitöltőt az adatbázisba

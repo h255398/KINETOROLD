@@ -48,18 +48,7 @@
 
     <?php
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        $servername = "localhost";
-        $username = "root"; // A XAMPP alapértelmezett felhasználója
-        $password = ""; // A XAMPP alapértelmezett jelszava
-        $dbname = "szakdoga";
-
-        // Kapcsolódás az adatbázishoz
-        $conn = new mysqli($servername, $username, $password, $dbname);
-
-        // Ellenőrzés
-        if ($conn->connect_error) {
-            die("Kapcsolódás hiba: " . $conn->connect_error);
-        }
+        require_once "db_connect.php";
 
         // Regisztrációs űrlap adatok
         $felhasznalonev = $conn->real_escape_string($_POST['username']);

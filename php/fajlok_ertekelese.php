@@ -16,10 +16,7 @@ if ($kitolto_id === null) {
 }
 
 // Adatbázis kapcsolat
-$conn = new mysqli("localhost", "root", "", "szakdoga");  ///kicserelni cimet user Anna,jelszo dc, database leirva
-if ($conn->connect_error) {
-    die("Kapcsolódási hiba: " . $conn->connect_error);
-}
+require_once "db_connect.php";
 
 // Fájlok betöltése session-be, ha még nincs
 if (!isset($_SESSION['files_images_' . $projekt_id]) || !isset($_SESSION['files_videos_' . $projekt_id])) {

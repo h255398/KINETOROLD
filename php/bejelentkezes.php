@@ -36,16 +36,8 @@
     <?php
     // ell., hogy POSTtal történik e
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        $servername = "localhost";
-        $username = "root"; // XAMPP alap felhaszn
-        $password = ""; // XAMPP alap jelszó
-        $dbname = "szakdoga";
-        // adatb kapcs létrehozása
-        $conn = new mysqli($servername, $username, $password, $dbname);
-        // kapcs ell.
-        if ($conn->connect_error) {
-            die("Kapcsolódás hiba: " . $conn->connect_error);
-        }
+        require_once "db_connect.php";
+
         // felhnév és jelszó bevitel adatbból (real escape string az sql injekciók ellen)
         $felhasznalonev = $conn->real_escape_string($_POST['username']);
         $jelszo = $_POST['password'];

@@ -9,16 +9,8 @@ if (!isset($_SESSION['felhasznalonev']) || $_SESSION['felhasznalonev'] !== 'admi
 if (isset($_GET['id'])) { //ell az id-t
     $userId = $_GET['id'];
     // adatb kapcs
-    $servername = "localhost";
-    $username = "root";
-    $password = "";
-    $dbname = "szakdoga";
-    // adatb kapcs
-    $conn = new mysqli($servername, $username, $password, $dbname);
-    // kapcs. ell.
-    if ($conn->connect_error) {
-        die("Kapcsolódás hiba: " . $conn->connect_error);
-    }
+    require_once "db_connect.php";
+
     // létezik e a felhaszn.
     $sql = "SELECT felhasznalonev FROM felhasznalok WHERE id = '$userId'";
     $result = $conn->query($sql);

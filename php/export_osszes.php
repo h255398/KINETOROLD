@@ -6,15 +6,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
 
 // Kapcsolódás az adatbázishoz
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "szakdoga";
-
-$conn = new mysqli($servername, $username, $password, $dbname);
-if ($conn->connect_error) {
-    die("Kapcsolódási hiba: " . $conn->connect_error);
-}
+require_once "db_connect.php";
 
 // Új Spreadsheet objektum létrehozása
 $spreadsheet = new Spreadsheet();

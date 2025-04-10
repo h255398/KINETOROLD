@@ -2,10 +2,7 @@
 session_start();
 
 // Adatbázis kapcsolat
-$conn = new mysqli("localhost", "root", "", "szakdoga");
-if ($conn->connect_error) {
-    die("Kapcsolódási hiba: " . $conn->connect_error);
-}
+require_once "db_connect.php";
 
 // Projekt ID ellenőrzése
 $projekt_id = isset($_GET['projekt_id']) ? intval($_GET['projekt_id']) : null;

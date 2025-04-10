@@ -38,15 +38,7 @@
         }
 
         // Kapcsolódás az adatbázishoz
-        $servername = "localhost";
-        $username = "root";
-        $password = "";
-        $dbname = "szakdoga";
-
-        $conn = new mysqli($servername, $username, $password, $dbname);
-        if ($conn->connect_error) {
-            die("Kapcsolódás hiba: " . $conn->connect_error);
-        }
+        require_once "db_connect.php";
 
         // A bejelentkezett felhasználó ID-jának lekérdezése
         $felhasznalonev = $_SESSION['felhasznalonev'];

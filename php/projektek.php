@@ -31,15 +31,7 @@
 
     <div class="container">
         <?php
-        $servername = "localhost";
-        $username = "root";
-        $password = "";
-        $dbname = "szakdoga";
-
-        $conn = new mysqli($servername, $username, $password, $dbname);
-        if ($conn->connect_error) {
-            die("Kapcsolódás hiba: " . $conn->connect_error);
-        }
+        require_once "db_connect.php";
 
         // Frissített lekérdezés, hogy az eddigi_kitoltesek mezőt is kiválassza
         $sql = "SELECT id, nev, leiras, fokep, eddigi_kitoltesek FROM projektek";
