@@ -72,7 +72,7 @@ if (!empty($_FILES['media']['name'][0])) {
         $fileType = ''; // Kezdetben üres string
         if (strpos($name, '.mp4') !== false || strpos($name, '.webm') !== false) {
             $fileType = 'video';
-        } elseif (strpos($name, '.jpg') !== false || strpos($name, '.png') !== false) {
+        } elseif (strpos($name, '.jpg') !== false || strpos($name, '.png') !== false || strpos($name, '.jpeg') !== false) {
             $fileType = 'kep';
         } elseif (strpos($name, '.mp3') !== false || strpos($name, '.wav') !== false) {
             $fileType = 'audio';
