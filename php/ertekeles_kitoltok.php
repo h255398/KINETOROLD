@@ -1,6 +1,9 @@
 <?php
 session_start(); // Session indítása
+ob_start(); // Kimenet pufferelése
+
 ?>
+
 <!DOCTYPE html>
 <html lang="hu"> <!-- A dokumentum magyar nyelvű -->
 <head>
@@ -28,6 +31,43 @@ session_start(); // Session indítása
             }
             return true;  // Ha minden oké, tovább léphet
         }
+
+        function showDateInput(selectElem, questionId) {
+            const questionContainer = selectElem.closest('.question-container');
+            let dateInput = questionContainer.querySelector('input[type="date"]');  // Keresünk egy meglévő dátum mezőt
+
+            // Ha a választás 'date', akkor megjelenítjük a dátum inputot
+            if (selectElem.value === 'date') {
+                // Ha még nincs dátum input mező, akkor létrehozzuk
+                if (!dateInput) {
+                    dateInput = document.createElement('input');
+                    dateInput.setAttribute('type', 'date');
+                    dateInput.name = 'valasz[' + questionId + ']'; // Az input mező neve kérdés ID alapján
+                    dateInput.required = true; // A mező kötelező
+                    questionContainer.appendChild(dateInput); // Hozzáadjuk a kérdés konténeréhez
+                }
+            } else {
+                // Ha a választás nem 'date', eltávolítjuk a dátum inputot
+                if (dateInput) {
+                    dateInput.remove();
+                }
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            // Keresés a legördülő menük között, és minden esetben frissítjük a dátum mezőt
+            const selects = document.querySelectorAll('select');
+            selects.forEach(function(select) {
+                const questionId = select.name.match(/\d+/)[0];  // Kivesszük az ID-t a kérdéshez
+                // Megjelenítjük a megfelelő input mezőt (dátum inputot, ha 'date' típusú választ választottak)
+                showDateInput(select, questionId);
+                
+                // Hozzáadjuk az 'onchange' eseményt a legördülő menühöz
+                select.addEventListener('change', function() {
+                    showDateInput(select, questionId);
+                });
+            });
+        });
     </script>
 </head>
 <body>
@@ -106,10 +146,11 @@ session_start(); // Session indítása
             echo '</label>';
             // Válasz típus ellenőrzése
             $valasz_tipus = $row['valasz_tipus'];
+            echo '<div class="question-container">';  // Konténer a kérdéshez
             if ($valasz_tipus == 'enum') {
                 // Legördülő menü
                 $lehetseges_valaszok = explode(',', $row['lehetseges_valaszok']);  // Lehetséges válaszok
-                echo '<select name="valasz[' . $row['id'] . ']"' . ($required == 1 ? ' required' : '') . '>';
+                echo '<select name="valasz[' . $row['id'] . ']" onchange="showDateInput(this, ' . $row['id'] . ')"' . ($required == 1 ? ' required' : '') . '>';
                 echo '<option value="">-- Válassz --</option>';
                 foreach ($lehetseges_valaszok as $valasz) {
                     echo '<option value="' . htmlspecialchars(trim($valasz)) . '">' . htmlspecialchars(trim($valasz)) . '</option>';
@@ -124,7 +165,11 @@ session_start(); // Session indítása
             } elseif ($valasz_tipus == 'string') {
                 // Szöveges válasz, ami lehet hosszabb
                 echo '<textarea name="valasz[' . $row['id'] . ']"' . ($required == 1 ? ' required' : '') . ' placeholder="Írd be a válaszodat..."></textarea>';
+            } elseif ($valasz_tipus == 'date') {
+                echo '<input type="date" name="valasz[' . $row['id'] . ']" min="1900-01-01" max="2020-01-01"' . ($required == 1 ? ' required' : '') . '>';
+
             }
+            echo '</div>';
         }
         // Gombok elhelyezése
         echo '<div class="button-container">';
@@ -149,3 +194,7 @@ session_start(); // Session indítása
     </div>
 </body>
 </html>
+
+<?php
+ob_end_flush(); // Pufferelt tartalom kiküldése
+?>

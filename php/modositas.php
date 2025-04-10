@@ -381,11 +381,16 @@ function addQuestion() {
             <option value="int">Szám</option>
             <option value="enum">Választásos</option>
             <option value="text">Szöveg</option>
+            <option value="date">Dátum</option> <!-- Új lehetőség a dátumhoz -->
         </select>
 
         <div class="enum-options" style="display: none;">
             <label for="options">Választék (választásos esetén):</label>
             <input type="text" name="new_questions[${index}][lehetseges_valaszok]" placeholder="Példa: Igen, Nem">
+        </div>
+        <div class="date-options" style="display: none;">
+            <label for="date_input_${index}">Dátum:</label>
+            <input type="date" name="new_questions[${index}][date]" id="date_input_${index}">
         </div>
 
         <label for="required">Kötelező?</label>
@@ -395,6 +400,27 @@ function addQuestion() {
     `;
 
     document.getElementById('questions').appendChild(questionContainer);
+}
+
+function toggleRequiredField(selectElem) {
+    const container = selectElem.closest('.question-container');
+    const dateOptions = container.querySelector('.date-options');
+    
+    // Ha a válasz típusa "date" akkor jelenítjük meg a dátum input mezőt
+    if (selectElem.value === 'date') {
+        dateOptions.style.display = 'block';
+    } else {
+        dateOptions.style.display = 'none';
+    }    
+}
+function toggleRequiredField(elem) {
+    const questionContainer = elem.closest('.question-container');
+    const enumOptions = questionContainer.querySelector('.enum-options');
+
+    if (elem.tagName === 'SELECT') {
+        // Ha a válasz típusa 'enum', akkor a válaszlehetőségek input mezőjét jelenítjük meg
+        enumOptions.style.display = elem.value === 'enum' ? 'block' : 'none';
+    }
 }
 
 

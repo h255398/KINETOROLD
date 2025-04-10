@@ -62,6 +62,7 @@ while ($row = $kerdesEredmeny->fetch_assoc()) {
                     <option value="int">Szám</option>
                     <option value="enum">Választásos</option>
                     <option value="text">Szöveg</option>
+                    <option value="date">Dátum</option> <!-- Dátum típus hozzáadása -->
                 </select>
 
                 <div class="enum-options" style="display: none;">
@@ -106,12 +107,15 @@ while ($row = $kerdesEredmeny->fetch_assoc()) {
         }
 
         function toggleRequiredField(elem) {
-            const questionContainer = elem.closest('.question-container');
-            const enumOptions = questionContainer.querySelector('.enum-options');
-            if (elem.tagName === 'SELECT') {
-                enumOptions.style.display = elem.value === 'enum' ? 'block' : 'none';
-            }
-        }
+    const questionContainer = elem.closest('.question-container');
+    const enumOptions = questionContainer.querySelector('.enum-options');
+
+    if (elem.tagName === 'SELECT') {
+        
+
+        enumOptions.style.display = elem.value === 'enum' ? 'block' : 'none';
+    }
+}
     </script>
 </head>
 
@@ -164,7 +168,7 @@ while ($row = $kerdesEredmeny->fetch_assoc()) {
 
                 $coverImageName = $_FILES['cover_image']['name'];
                 $coverImageTmpName = $_FILES['cover_image']['tmp_name'];
-                $coverImageTarget = "C:/xampp/htdocs/szakdolgozat31/feltoltesek/" . basename($coverImageName);
+                $coverImageTarget = "../feltoltesek/" . basename($coverImageName);
 
                 if (!file_exists($coverImageTmpName)) {
                     die("Hiba: A feltöltött borítókép nem létezik!");
@@ -178,7 +182,7 @@ while ($row = $kerdesEredmeny->fetch_assoc()) {
                 foreach ($_FILES['files']['name'] as $index => $fileName) {
                     $fileTmpName = $_FILES['files']['tmp_name'][$index];
                     $fileType = (strpos($_FILES['files']['type'][$index], 'image') !== false) ? 'kep' : 'video';
-                    $fileTarget = "C:/xampp/htdocs/szakdolgozat31/feltoltesek/" . basename($fileName);
+                    $fileTarget = "../feltoltesek/" . basename($fileName);
 
                     if (move_uploaded_file($fileTmpName, $fileTarget)) {
                         $uploadedFiles[] = ['fileName' => $fileName, 'type' => $fileType];
@@ -206,6 +210,13 @@ while ($row = $kerdesEredmeny->fetch_assoc()) {
                             $sqlQuestion = "INSERT INTO kerdesek (projekt_id, kerdes, valasz_tipus, lehetseges_valaszok, required) 
                                             VALUES ('$projectId', '$kerdes', '$valaszTipus', '$lehetsegesValaszok', '$required')";
                             $conn->query($sqlQuestion);
+
+                            // Dátum válaszok mentése
+                if ($valaszTipus === 'date' && $valasz) {
+                    $sqlAnswer = "INSERT INTO kerdesek_valaszok (kerdes_id, valasz) 
+                                  VALUES ('$question_id', '$valasz')";
+                    $conn->query($sqlAnswer);
+                }
                         }
                         
                     }
