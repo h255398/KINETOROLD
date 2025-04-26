@@ -4,10 +4,10 @@ $username = "root";
 $password = "";
 $dbname = "szakdoga";
 
-// Kapcsolódás az adatbázishoz
+// kapcsolódás az adatbázishoz
 $conn = new mysqli($servername, $username, $password, $dbname);
 
-// Ellenőrizzük, hogy a kapcsolat sikerült-e
+// ellenőrizzük, hogy a kapcsolat sikerült-e
 if ($conn->connect_error) {
     die("Kapcsolódás hiba: " . $conn->connect_error);
 }
