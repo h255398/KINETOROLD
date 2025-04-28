@@ -1,3 +1,13 @@
+<?php
+session_start(); // Session indítása
+        
+        // Ellenőrzés, hogy a felhasználó be van-e jelentkezve
+        if (!isset($_SESSION['felhasznalonev'])) {
+            header("Location: bejelentkezes.php");
+            exit();
+        }
+?>
+
 <!DOCTYPE html>
 <html lang="hu">
 
@@ -29,13 +39,7 @@
 
     <div class="container">
         <?php
-        session_start(); // Session indítása
         
-        // Ellenőrzés, hogy a felhasználó be van-e jelentkezve
-        if (!isset($_SESSION['felhasznalonev'])) {
-            header("Location: bejelentkezes.php");
-            exit();
-        }
 
         // Kapcsolódás az adatbázishoz
         require_once "db_connect.php";
