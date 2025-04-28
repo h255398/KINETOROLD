@@ -1,8 +1,8 @@
 <?php
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "szakdoga";
+$servername = "imageeval.mysql.database.azure.com";
+$username = "annaAdmin";
+$password = "FvhrFnjHzgF32!";
+$dbname = "szakdoga2";
 
 // kapcsolódás az adatbázishoz
 $conn = new mysqli($servername, $username, $password, $dbname);
