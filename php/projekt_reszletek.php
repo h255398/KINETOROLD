@@ -29,31 +29,31 @@
 
     <div class="container">
         <?php
-        session_start(); // Session indítása
+        session_start(); 
         
-        require '../vendor/autoload.php'; // Autoload Composer packages
+        require '../vendor/autoload.php'; // autoload Composer packages
         
-        // Ellenőrzés, hogy a felhasználó be van-e jelentkezve
+        // ell felh bejel
         if (!isset($_SESSION['felhasznalonev'])) {
             header("Location: bejelentkezes.php");
             exit();
         }
 
-        // Kapcsolódás az adatbázishoz
+        // adatb kapcs
         require_once "db_connect.php";
-        // Projekt ID lekérése URL-ből
+        // projekt ID 
         $projektId = $_GET['id'];
 
-        // Lekérdezzük a projekt adatait
+        // projekt adatai
         $sqlProject = "SELECT * FROM projektek WHERE id = '$projektId'";
         $projectResult = $conn->query($sqlProject);
         $project = $projectResult->fetch_assoc();
 
         if ($project) {
-            echo '<div class="cover-image-wrapper">'; // Wrapper elem
+            echo '<div class="cover-image-wrapper">'; 
             echo '<div class="project-name"><strong>Projekt borítóképe:</strong></div>';
             echo '<img class="cover-image" src="/szakdolgozat31/feltoltesek/' . htmlspecialchars($project['fokep']) . '" alt="' . htmlspecialchars($project['nev']) . '">';
-            echo '</div>'; // Zárd le a wrapper elemet
+            echo '</div>'; 
             echo '<div class="project-name"><strong>Projekt neve:</strong><br>' . htmlspecialchars($project['nev']) . '</div>';
             echo '<div class="project-description"><strong>Projekt leírása:</strong><br>' . htmlspecialchars($project['leiras']) . '</div>';
         } else {
@@ -61,12 +61,12 @@
         }
 
 
-        // Projekt média fájlok kezelése
+        // fajlok
         $sqlMedia = "SELECT * FROM fajlok WHERE projekt_id = '$projektId'";
         $mediaResult = $conn->query($sqlMedia);
 
         echo '<div class="media-container">';
-        $mediaCount = 0;
+        $mediaCount = 0; // számláló
 
         if ($mediaResult->num_rows > 0) {
             while ($media = $mediaResult->fetch_assoc()) {
@@ -74,13 +74,13 @@
                 $fileType = $media['tipus'];
 
                 if ($fileType == 'kep') {
-                    // Kép fájlok kezelése
+                    // képeek
                     echo '<div class="media-item">';
                     echo '<img src="../feltoltesek/' . htmlspecialchars($fileName) . '" alt="' . htmlspecialchars($fileName) . '">';
                     echo '</div>';
                     $mediaCount++;
                 } elseif ($fileType == 'video') {
-                    // Videó fájlok kezelése
+                    // videók
                     $ext = pathinfo($fileName, PATHINFO_EXTENSION);
                     if (in_array($ext, ['mp4', 'webm', 'ogg'])) {
                         echo '<div class="media-item">';
@@ -95,58 +95,58 @@
                     $mediaCount++;
                 }
 
-                // Megállunk, ha elértük a 12 médiát
+                // max 12 média
                 if ($mediaCount >= 12) {
                     break;
                 }
             }
 
-            // Ha több mint 12 fájl van
+            // ha több mint 12 fájl van
             if ($mediaResult->num_rows > 12) {
                 echo '<div class="more-media">Több média elérhető...</div>';
             }
         } else {
             echo '<p>Nincs megjeleníthető média.</p>';
         }
-        echo '</div>'; // Zárd le a media-container div-et
+        echo '</div>';
         
-        // Adatok és statisztikák megjelenítése
-        $kitoltesekSzama = $project['eddigi_kitoltesek']; // Eddigi kitöltések
-        $kitoltesiCel = $project['kitoltesi_cel']; // Kitöltési cél
+        // többi adat kitoltesek száma és cél
+        $kitoltesekSzama = $project['eddigi_kitoltesek'];
+        $kitoltesiCel = $project['kitoltesi_cel'];
         
-        // Fájlok számának lekérdezése
+        // fájlok száma
         $sqlFilesCount = "SELECT COUNT(*) as files_count FROM fajlok WHERE projekt_id = '$projektId'";
         $filesCountResult = $conn->query($sqlFilesCount);
         $filesCountRow = $filesCountResult->fetch_assoc();
         $fajlokSzama = $filesCountRow['files_count'];
-
+// megjel
         echo '<div class="kitoltesek-szama" style="margin-top: 20px;">';
         echo '<h3>Fájlok száma: ' . htmlspecialchars($fajlokSzama) . '</h3>';
         echo '<h3>Eddigi kitöltések száma: ' . htmlspecialchars($kitoltesekSzama) . '</h3>';
         echo '</div>';
 
-        // Cél megjelenítése és progress bar
+        // cél megjelenítése és progress bar
         echo '<div class="goal-container" style="margin-top: 20px;">';
         echo '<h3>Cél: ' . htmlspecialchars($kitoltesiCel) . ' kitöltő</h3>';
         echo '<div id="progress-container">';
-        // Ellenőrizd, hogy a $kitoltesiCel ne legyen nulla
+        // ha nem nulla a kitöltési cél
         if ($kitoltesiCel != 0) {
             $progress = ($kitoltesekSzama / $kitoltesiCel) * 100;
         } else {
-            // Ha a cél nulla, akkor ne legyen osztás, például állítsd be a progress értéket 0-ra
+            // ha mégis 0 akkkor 0ra beállítani
             $progress = 0;
         }
 
-        // A min() függvény továbbra is használható a 100%-os maximális korlátozásra
+        // progress bar
         echo '<div id="progress-bar" style="width: ' . min($progress, 100) . '%;"></div>';
         echo '</div>';
         echo '</div>';
 
-        // Értékelések megjelenítése
+        // értékelések megjelenítése
         echo '<div class="ertekelesek-megjelenitese" style="margin-top: 20px;">';
         echo '<h3>Képek értékelései:</h3>';
 
-        // Pontszámok összesítése a projekt ID alapján
+        // pontszámok összesítése
         $sqlErtekelesek = "SELECT pontszam, COUNT(*) as szam FROM ertekelt_fajlok ef
                        JOIN fajlok f ON ef.fajl_id = f.id 
                        WHERE f.projekt_id = '$projektId' 
@@ -154,16 +154,16 @@
                        ORDER BY pontszam ASC";
 
         $ertekelesekResult = $conn->query($sqlErtekelesek);
-        $ertekelesekOsszesen = array(0, 0, 0, 0, 0); // 1-től 5-ig terjedő értékelések számlálása
+        $ertekelesekOsszesen = array(0, 0, 0, 0, 0); // 1-től 5-ig  számlálás 1es a 0.idexen
         
         if ($ertekelesekResult->num_rows > 0) {
             while ($ertekeles = $ertekelesekResult->fetch_assoc()) {
-                $ertekelesOsszeg = (int) $ertekeles['pontszam'] - 1; // 1-5 helyett 0-4 index
+                $ertekelesOsszeg = (int) $ertekeles['pontszam'] - 1; // 1-5 helyett 0-4 index miatt
                 $ertekelesekOsszesen[$ertekelesOsszeg] = (int) $ertekeles['szam'];
             }
         }
 
-        // Értékelések megjelenítése
+        // értékelések megjelenítése
         echo '<ul class="ul">';
         for ($i = 0; $i < 5; $i++) {
             echo '<li>' . ($i + 1) . ' pont: ' . htmlspecialchars($ertekelesekOsszesen[$i]) . ' értékelés</li>';
@@ -176,7 +176,7 @@
 
         <div class="chart-container">
             <?php
-            // Ellenőrizzük, hogy van-e legalább egy értékelés
+            // ell van e értékelés
             $hasRatings = false;
             foreach ($ertekelesekOsszesen as $ratingCount) {
                 if ($ratingCount > 0) {
@@ -185,7 +185,7 @@
                 }
             }
 
-            // Ha van értékelés, jelenítse meg a grafikont
+            // ha van értékelés akkor diagramm megjel
             if ($hasRatings) {
                 echo '<canvas id="ratingChart" style="display: block; box-sizing: border-box;" width="500" height="500"></canvas>';
             } else {
@@ -194,7 +194,7 @@
             ?>
         </div>
         <?php
-        // Lekérdezzük a 3 legjobbra értékelt képet
+        // top 3 kép megjel ha van és átlag értékelésük
         $sqlTopKepek = "SELECT f.fajl_nev, AVG(ef.pontszam) AS atlag_pontszam 
                 FROM ertekelt_fajlok ef
                 JOIN fajlok f ON ef.fajl_id = f.id 
@@ -207,7 +207,7 @@
 
         $conn->close();
 
-        // Ha van értékelt kép, megjelenítjük
+        
         echo '<div class="top-kepek-container">';
         echo '<h3>Top 3 legjobbra értékelt kép:</h3>';
         if ($topKepekResult->num_rows > 0) {
@@ -226,15 +226,15 @@
         ?>
         <script>
             const ertekelesek = <?php echo json_encode($ertekelesekOsszesen); ?>;
-            let filteredRatings = [...ertekelesek]; // Másolat készítése az eredeti adatokból
+            let filteredRatings = [...ertekelesek]; // másolat a diagramm módosításához kell majd
 
-            const totalRatings = () => filteredRatings.reduce((acc, value) => acc + value, 0);
+            const totalRatings = () => filteredRatings.reduce((acc, value) => acc + value, 0); // összes értékelés összege
 
-            // Ellenőrizzük, hogy létezik a canvas elem
+            // van e már canvas elem
             const canvas = document.getElementById('ratingChart');
             if (canvas) {
                 const ctx = canvas.getContext('2d');
-
+                // update ha változtatunk rajta (elrejtünk)
                 function updateChart() {
                     if (ratingChart) {
                         ratingChart.data.datasets[0].data = filteredRatings;
@@ -242,7 +242,7 @@
                     }
                 }
 
-                // Inicializáljuk a Chart.js diagramot
+                // diagramm inicializálása
                 const ratingChart = new Chart(ctx, {
                     type: 'pie',
                     data: {
@@ -250,7 +250,7 @@
                         datasets: [{
                             label: 'Értékelések megoszlása',
                             data: filteredRatings,
-                            backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'],
+                            backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'], // színek hozzá
                             hoverOffset: 4
                         }]
                     },
@@ -270,12 +270,12 @@
                                             index: index
                                         }));
                                     }
-                                },
+                                }, // ha rákatt akkor kivonjuk a körből
                                 onClick: (event, legendItem) => {
                                     const index = legendItem.index;
                                     filteredRatings[index] = filteredRatings[index] === 0 ? ertekelesek[index] : 0;
 
-                                    // Frissítsük a legend kinézetét
+                                    // frissít
                                     const legendItems = document.querySelectorAll('.chartjs-legend li');
                                     if (legendItems[index]) {
                                         legendItems[index].classList.toggle('legend-item-removed', filteredRatings[index] === 0);
@@ -283,7 +283,7 @@
 
                                     updateChart();
                                 }
-                            },
+                            },// ha fölé visszük megjel a %os arányt és db szám is
                             tooltip: {
                                 callbacks: {
                                     label: function (tooltipItem) {
@@ -292,7 +292,7 @@
                                         return `${tooltipItem.label}: ${value} értékelés (${percentage}%)`;
                                     }
                                 }
-                            },
+                            },// a szeleteken belül is legyen megjelenve
                             datalabels: {
                                 color: '#fff',
                                 formatter: function (value) {

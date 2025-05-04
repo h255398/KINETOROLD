@@ -1,17 +1,17 @@
 <?php
 session_start();
 
-// Adatbázis kapcsolat
+// adatb kapcs
 require_once "db_connect.php";
 
-// Projekt ID ellenőrzése
+// projekt ID 
 $projekt_id = isset($_GET['projekt_id']) ? intval($_GET['projekt_id']) : null;
 if ($projekt_id === null) {
     echo "Nincs projekt kiválasztva.";
     exit();
 }
 
-// Először ellenőrizzük, hogy van-e legalább egy kép vagy videó a projektben
+//fajlok tipusa lekérése
 $check_files_stmt = $conn->prepare("
     SELECT DISTINCT tipus 
     FROM fajlok 
@@ -23,10 +23,9 @@ $file_types_result = $check_files_stmt->get_result();
 $file_types = $file_types_result->fetch_all(MYSQLI_ASSOC);
 $check_files_stmt->close();
 
-// Ha van legalább egy kép és videó is, akkor a kód a következő módon kell működjön:
-// Ha csak képek vannak:
+// ha csak képek
 if (in_array(['tipus' => 'kep'], $file_types)) {
-    // Képek lekérdezése
+    // képek lekérdezése átlag pontszám és csak 3at jelenít meg
     $top_images_stmt = $conn->prepare("
         SELECT fajl_nev, ROUND(AVG(pontszam), 2) as atlag_pontszam 
         FROM ertekelt_fajlok 
@@ -42,7 +41,7 @@ if (in_array(['tipus' => 'kep'], $file_types)) {
     $top_images = $top_images_result->fetch_all(MYSQLI_ASSOC);
     $top_images_stmt->close();
 
-    // Képek megjelenítése
+    // képek megjelenítése
     $media_section = '<h2>Top Képek</h2>';
     foreach ($top_images as $image) {
         $media_section .= '
@@ -52,9 +51,9 @@ if (in_array(['tipus' => 'kep'], $file_types)) {
             </div>';
     }
 }
-// Ha csak videók vannak:
+// ha csak videók
 elseif (in_array(['tipus' => 'video'], $file_types)) {
-    // Videók lekérdezése
+    // videók lekérdezése átlag pnt és csak 3at
     $top_videos_stmt = $conn->prepare("
         SELECT fajl_nev, ROUND(AVG(pontszam), 2) as atlag_pontszam 
         FROM ertekelt_fajlok 
@@ -70,7 +69,7 @@ elseif (in_array(['tipus' => 'video'], $file_types)) {
     $top_videos = $top_videos_result->fetch_all(MYSQLI_ASSOC);
     $top_videos_stmt->close();
 
-    // Videók megjelenítése
+    // videók megjelenítése
     $media_section = '<h2>Top Videók</h2>';
     foreach ($top_videos as $video) {
         $media_section .= '
@@ -83,12 +82,12 @@ elseif (in_array(['tipus' => 'video'], $file_types)) {
             </div>';
     }
 } else {
-    // Ha nincs sem kép, sem videó
+   
     echo "Nincs képek vagy videók az adott projektben.";
     exit();
 }
 
-// Adatbázis kapcsolat bezárása
+
 $conn->close();
 ?>
 

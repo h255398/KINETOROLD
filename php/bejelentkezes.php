@@ -37,11 +37,11 @@ session_start()
         </div>
     </div>
     <?php
-    // ell., hogy POSTtal történik e
+    // POSTtal történik
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         require_once "db_connect.php";
 
-        // felhnév és jelszó bevitel adatbból (real escape string az sql injekciók ellen)
+        // felhnév és jelszó (real escape string az sql injekciók ellen)
         $felhasznalonev = $conn->real_escape_string($_POST['username']);
         $jelszo = $_POST['password'];
         // sql a felhnév és jelszó ell.re

@@ -1,16 +1,16 @@
 <?php
-// Az adatbázis kapcsolat beállítása
+// adatb kapcs
 require_once "db_connect.php";
 
-// Projekt ID lekérdezése
+// projekt id
 $projekt_id = isset($_GET['id']) ? $_GET['id'] : null;
 
 if ($projekt_id === null) {
     die("Hiba: Nincs megadva projekt ID!");
 }
 
-// Képek és videók lekérdezése
-$query = "SELECT * FROM fajlok WHERE projekt_id = ? ORDER BY id ASC LIMIT 5"; // Az első 5 fájl lekérdezése
+// média lekérdezése
+$query = "SELECT * FROM fajlok WHERE projekt_id = ? ORDER BY id ASC LIMIT 5"; // első 5 fájl lekérdezése
 $stmt = $conn->prepare($query); 
 $stmt->bind_param("i", $projekt_id);
 $stmt->execute();
@@ -19,28 +19,28 @@ $resultMedia = $stmt->get_result();
 
 <div class="media-preview">
     <?php
-    $mediaCount = 0; // Számláló a médiafájlok számára
+    $mediaCount = 0; // számláló a médiafájlok számára
     while ($media = $resultMedia->fetch_assoc()):
-        if ($mediaCount < 5): // Csak az első 5 fájl megjelenítése
+        if ($mediaCount < 5): // csak az első 5 fájl megjelenítése
             ?>
             <div class="media-item">
-                <?php
+            <?php
                 $fileName = $media['fajl_nev'];
-                // Képek kezelése
-                if (strpos($fileName, '.jpg') !== false || strpos($fileName, '.png') !== false): ?>
-                    <img src="../feltoltesek/<?php echo htmlspecialchars($fileName); ?>"
-                        alt="<?php echo htmlspecialchars($fileName); ?>">
-                <?php
-                    // Videók kezelése
-                elseif (strpos($fileName, '.mp4') !== false || strpos($fileName, '.webm') !== false): ?>
-                    <video controls>
-                        <source src="../feltoltesek/<?php echo htmlspecialchars($fileName); ?>"
-                            type="video/<?php echo pathinfo($fileName, PATHINFO_EXTENSION); ?>">
-                        Your browser does not support the video tag.
-                    </video>
-                <?php else: ?>
-                    <p><?php echo htmlspecialchars($fileName); ?></p>
-                <?php endif; ?>
+                $filePath = '../feltoltesek/' . htmlspecialchars($fileName);
+                // képek, videók kezelése
+                if (strpos($fileName, '.jpg') !== false || strpos($fileName, '.png') !== false) {
+                    echo '<img src="' . $filePath . '" alt="' . htmlspecialchars($fileName) . '">';
+                } elseif (strpos($fileName, '.mp4') !== false || strpos($fileName, '.webm') !== false) {
+                    $ext = pathinfo($fileName, PATHINFO_EXTENSION);
+                    echo '<video controls>
+                            <source src="' . $filePath . '" type="video/' . $ext . '">
+                            Your browser does not support the video tag.
+                        </video>';
+                } else {
+                    echo '<p>' . htmlspecialchars($fileName) . '</p>'; //más
+                }
+                ?>
+
             </div>
         <?php
         endif;
@@ -50,7 +50,7 @@ $resultMedia = $stmt->get_result();
 </div>
 
 <?php
-// Adatbázis kapcsolat lezárása
+
 $stmt->close();
 $conn->close();
 ?>

@@ -48,34 +48,35 @@
 
     <?php
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        // adatb kapcs
         require_once "db_connect.php";
 
-        // Regisztrációs űrlap adatok
+        // reg adatok
         $felhasznalonev = $conn->real_escape_string($_POST['username']);
         $email = $conn->real_escape_string($_POST['email']);
-        $jelszo = password_hash($_POST['password'], PASSWORD_DEFAULT); // Jelszó titkosítása
+        $jelszo = password_hash($_POST['password'], PASSWORD_DEFAULT); // jelszó titkosítása
     
-        // Ellenőrzés, hogy a felhasználónév már létezik-e
+        // ell felh név már van e
         $checkUsernameSql = "SELECT * FROM felhasznalok WHERE felhasznalonev = '$felhasznalonev'";
         $checkUsernameResult = $conn->query($checkUsernameSql);
 
-        // Ellenőrzés, hogy az e-mail cím már regisztrálva van-e
+        // ell email van e már
         $checkEmailSql = "SELECT * FROM felhasznalok WHERE email = '$email'";
         $checkEmailResult = $conn->query($checkEmailSql);
 
         if ($checkUsernameResult->num_rows > 0) {
-            // Ha a felhasználónév foglalt
+            // ha a felhasználónév foglalt
             echo "<script>alert('A felhasználónév már foglalt. Kérlek válassz másikat!');</script>";
         } elseif ($checkEmailResult->num_rows > 0) {
-            // Ha az e-mail cím már regisztrálva van
+            // ha az email már regisztrálva van
             echo "<script>alert('Ez az e-mail cím már regisztrálva van!');</script>";
         } else {
-            // Ha nincs probléma, akkor végrehajtjuk a regisztrációt
+            // ha nincs baj, akkor végrehajtjuk a regisztrációt
             $sql = "INSERT INTO felhasznalok (felhasznalonev, email, jelszo) 
                 VALUES ('$felhasznalonev', '$email', '$jelszo')";
 
             if ($conn->query($sql) === TRUE) {
-                // Ha sikeres volt, átirányítjuk a felhasználót a bejelentkezéshez
+            
                 header("Location: bejelentkezes.php");
                 exit();
             } else {
@@ -85,7 +86,7 @@
 
 
 
-        // Kapcsolat lezárása
+    
         $conn->close();
     }
     ?>

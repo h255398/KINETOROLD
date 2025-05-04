@@ -1,35 +1,35 @@
 <?php
-session_start(); // Session indítása
+session_start();
 
-// Ellenőrizzük, hogy a felhasználó be van-e jelentkezve
+// ell felh bejel
 if (!isset($_SESSION['felhasznalonev'])) {
-    header("Location: bejelentkezes.php"); // Ha nem, átirányítjuk a bejelentkezés oldalra
+    header("Location: bejelentkezes.php");
     exit();
 }
 
 
 
-// Adatbázis kapcsolat beállítása
+// adatb kapcs
 require_once "db_connect.php";
 
 
-// Projekt ID lekérdezése a GET paraméterből
+// projekt ID 
 $projektId = $_GET['id'];
 
-// Projekt adatainak lekérdezése
+// projekt adatainak lekérdezése
 $sqlProject = "SELECT * FROM projektek WHERE id = '$projektId'";
 $projectResult = $conn->query($sqlProject);
 $project = $projectResult->fetch_assoc();
 
-// Médiafájlok lekérdezése
+// médiafájlok lekérdezése
 $sqlMedia = "SELECT * FROM fajlok WHERE projekt_id = '$projektId'";
 $mediaResult = $conn->query($sqlMedia);
 
-// Kérdések lekérdezése
+// kérdések lekérdezése
 $sqlQuestions = "SELECT * FROM kerdesek WHERE projekt_id = '$projektId'";
 $questionsResult = $conn->query($sqlQuestions);
 
-// Már meglévő kérdések lekérdezése
+// már meglévő kérdések lekérdezése összes
 $letezoKerdesek = [];
 $kerdesQuery = "SELECT DISTINCT kerdes FROM kerdesek WHERE kerdes NOT IN (SELECT kerdes FROM kerdesek WHERE projekt_id = '$projektId')";
 
@@ -39,28 +39,27 @@ while ($row = $kerdesEredmeny->fetch_assoc()) {
     $letezoKerdesek[] = $row['kerdes'];
 }
 
-// Form kezelés POST kérés esetén
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Csak akkor frissítjük az adatokat, ha az új mezők nem üresek
-    $nev = !empty($_POST['nev']) ? $_POST['nev'] : $project['nev']; // Projekt neve
-    $leiras = !empty($_POST['leiras']) ? $_POST['leiras'] : $project['leiras']; // Projekt leírása
+    // csak akkor frissítjük az adatokat, ha az új mezők nem üresek ha igen akkor nyilván a régi kell
+    $nev = !empty($_POST['nev']) ? $_POST['nev'] : $project['nev'];
+    $leiras = !empty($_POST['leiras']) ? $_POST['leiras'] : $project['leiras'];
 
-    // Borítókép kezelése
+    // borítókép kezelése
     if (!empty($_FILES['fokep']['name'])) {
-        $fokep = $_FILES['fokep']['name']; // Borítókép neve
-        move_uploaded_file($_FILES['fokep']['tmp_name'], "../feltoltesek/" . $fokep); // Fájl feltöltése
+        $fokep = $_FILES['fokep']['name'];
+        move_uploaded_file($_FILES['fokep']['tmp_name'], "../feltoltesek/" . $fokep); // fájl feltöltése
     } else {
-        $fokep = $project['fokep']; // Ha nincs új kép, megtartjuk a régit
+        $fokep = $project['fokep']; // ha nincs új kép, megtartjuk a régit
     }
 
-    // Médiafájlok feltöltése
+    // médiafájlok feltöltése
 if (!empty($_FILES['media']['name'][0])) {
     foreach ($_FILES['media']['name'] as $key => $name) {
-        $targetPath = "../feltoltesek/" . basename($name); // Célmappa
-        move_uploaded_file($_FILES['media']['tmp_name'][$key], $targetPath); // Fájl feltöltése
+        $targetPath = "../feltoltesek/" . basename($name);
+        move_uploaded_file($_FILES['media']['tmp_name'][$key], $targetPath); // fájl feltöltése
         
-        // Fájl típusának meghatározása
-        $fileType = ''; // Kezdetben üres string
+        // fájl típusának meghatározása
+        $fileType = '';
         if (strpos($name, '.mp4') !== false || strpos($name, '.webm') !== false) {
             $fileType = 'video';
         } elseif (strpos($name, '.jpg') !== false || strpos($name, '.png') !== false || strpos($name, '.jpeg') !== false) {
@@ -68,39 +67,39 @@ if (!empty($_FILES['media']['name'][0])) {
         } elseif (strpos($name, '.mp3') !== false || strpos($name, '.wav') !== false) {
             $fileType = 'audio';
         } else {
-            $fileType = 'other'; // Egyéb fájlok
+            $fileType = 'other';
         }
 
-        // Új fájl mentése az adatbázisba
+        // új fájl mentése az adatbázisba
         $sqlFile = "INSERT INTO fajlok (fajl_nev, projekt_id, tipus) VALUES ('$name', '$projektId', '$fileType')";
-        $conn->query($sqlFile); // Fájl rögzítése
+        $conn->query($sqlFile);
     }
 }
 
-    // Meglévő médiafájlok törlése
+    // meglévő médiafájlok törlése
     if (!empty($_POST['delete_files'])) {
         foreach ($_POST['delete_files'] as $fileId) {
-            // Fájl nevének lekérdezése törlés előtt
+            // fájl nevének lekérdezése törlés előtt
             $sqlGetFileName = "SELECT fajl_nev FROM fajlok WHERE id = '$fileId'";
             $resultFileName = $conn->query($sqlGetFileName);
             $fileName = $resultFileName->fetch_assoc()['fajl_nev'];
 
-            // Fájl törlése a feltöltések mappából
+            // fájl törlése a feltöltések mappából
             $filePath = "../feltoltesek/" . $fileName;
             if (file_exists($filePath)) {
-                unlink($filePath); // Fájl törlése
+                unlink($filePath); // fájl törlése
             }
 
-            // Fájl törlése az adatbázisból
+            // fájl törlése az adatbázisból
             $sqlDelete = "DELETE FROM fajlok WHERE id = '$fileId'";
             $conn->query($sqlDelete);
         }
     }
-    // Az új kérdések feldolgozása
+    // új kérdések feldolgozása
 if (!empty($_POST['new_questions'])) {
     foreach ($_POST['new_questions'] as $newQuestion) {
         if (!empty($newQuestion['kerdes']) || !empty($newQuestion['kerdes_select'])) {
-            // Ha van választott kérdés, akkor a választott kérdést mentjük el
+            // ha van választott kérdés, akkor a választott kérdést mentjük el
             $kerdes = !empty($newQuestion['kerdes_select']) ? $newQuestion['kerdes_select'] : $newQuestion['kerdes'];
             $tipus = $newQuestion['valasz_tipus'];
             $lehetseges_valaszok = !empty($newQuestion['lehetseges_valaszok']) ? $newQuestion['lehetseges_valaszok'] : null;
@@ -117,7 +116,7 @@ if (!empty($_POST['new_questions'])) {
     
     
 
-    // Kérdések frissítése
+    // kérdések frissítése
     if (!empty($_POST['edit_questions'])) {
         foreach ($_POST['edit_questions'] as $questionId => $questionData) {
             $kerdes = $questionData['kerdes'];
@@ -132,26 +131,25 @@ if (!empty($_POST['new_questions'])) {
         }
     }
     
-    // Kérdés törlése előtt töröljük a kapcsolódó válaszokat
+    // kérdés törlése előtt töröljük a kapcsolódó válaszokat
     if (!empty($_POST['delete_questions'])) {
         foreach ($_POST['delete_questions'] as $questionId) {
-            // Töröljük a válaszokat a kerdesekre_valasz táblából
+            // töröljük a válaszokat a kerdesekre_valasz táblából
             $stmtDeleteAnswers = $conn->prepare("DELETE FROM kerdesekre_valasz WHERE kerdesek_id = ?");
             $stmtDeleteAnswers->bind_param("i", $questionId);
             $stmtDeleteAnswers->execute();
             
-            // Most törölhetjük a kérdést
+            // töröljük a kérdést
             $stmtDeleteQuestion = $conn->prepare("DELETE FROM kerdesek WHERE id = ?");
             $stmtDeleteQuestion->bind_param("i", $questionId);
             $stmtDeleteQuestion->execute();
             
-            // Bezárjuk az utolsó lekérdezést
             $stmtDeleteQuestion->close();
         }
     }
     
 
-    // Kérdések törlése
+    // kérdések törlése
     if (!empty($_POST['delete_questions'])) {
         foreach ($_POST['delete_questions'] as $questionId) {
             $stmt = $conn->prepare("DELETE FROM kerdesek WHERE id = ?");
@@ -161,14 +159,13 @@ if (!empty($_POST['new_questions'])) {
         }
     }
 
-    // Projekt frissítése az adatbázisban
+    // kitöltési cél frissítése az adatbázisban
     $kitoltesi_cel = !empty($_POST['kitoltesi_cel']) ? $_POST['kitoltesi_cel'] : $project['kitoltesi_cel']; // Kitöltési cél
 
-    // Projekt frissítése az adatbázisban
+    // projekt frissítése az adatbázisban
     $sqlUpdate = "UPDATE projektek SET nev = '$nev', leiras = '$leiras', fokep = '$fokep', kitoltesi_cel = '$kitoltesi_cel' WHERE id = '$projektId'";
     $conn->query($sqlUpdate);
 
-    // Átirányítás a projekt részletező oldalra
     header("Location: projekt_reszletek.php?id=$projektId");
 }
 ?>
@@ -179,7 +176,7 @@ if (!empty($_POST['new_questions'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Projekt Módosítása</title>
-    <link rel="stylesheet" href="../css2/kezdolap.css?v=1.5"> <!-- Külső CSS fájlok -->
+    <link rel="stylesheet" href="../css2/kezdolap.css?v=1.5"> 
     <link rel="stylesheet" href="../css2/modositas.css?v=1.5">
     
 </head>
@@ -189,59 +186,59 @@ if (!empty($_POST['new_questions'])) {
 <body>
 
 <header>
-    <h1>Projektértékelő</h1> <!-- Oldal címe -->
+    <h1>Projektértékelő</h1> 
     <div class="auth-links">
-        <a href="../html/kezdolap.html">Kijelentkezés</a> <!-- Kijelentkezés link -->
+        <a href="../html/kezdolap.html">Kijelentkezés</a> 
     </div>
 </header>
 
 <nav>
     <ul>
-        <li><a href="projektjeim.php">Projektjeim</a></li> <!-- Link a projektek listájához -->
-        <li><a href="ujprojekt.php">Új projekt</a></li> <!-- Link új projekt létrehozásához -->
+        <li><a href="projektjeim.php">Projektjeim</a></li> 
+        <li><a href="ujprojekt.php">Új projekt</a></li> 
     </ul>
 </nav>
 
 <div class="content">
     <div class="form-container">
-        <h2>Projekt Módosítása</h2> <!-- Cím a módosító űrlaphoz -->
-        <form method="POST" enctype="multipart/form-data"> <!-- űrlap megnyitása -->
-            <label for="nev">Projekt neve:</label> <!-- Név mező -->
+        <h2>Projekt Módosítása</h2> 
+        <form method="POST" enctype="multipart/form-data"> 
+            <label for="nev">Projekt neve:</label> 
             <input type="text" id="nev" name="nev" value="<?php echo htmlspecialchars($project['nev']); ?>" required>
 
-            <label for="leiras">Leírás:</label> <!-- Leírás mező -->
+            <label for="leiras">Leírás:</label> 
             <textarea id="leiras" name="leiras"><?php echo htmlspecialchars($project['leiras']); ?></textarea>
 
-            <label for="fokep">Borítókép:</label> <!-- Borítókép mező -->
+            <label for="fokep">Borítókép:</label>
             <input type="file" id="fokep" name="fokep" accept="image/*"><br>
             <small>Ha nem szeretnél új képet feltölteni, csak hagyd üresen.</small><br>
 
             
 
-            <label>Képek/Videók/Hangfájlok:</label> <!-- Médiafájlok feltöltése -->
-            <!-- Média fájlok megjelenítése: -->
+            <label>Képek/Videók/Hangfájlok:</label> 
+            
             <div class="media-preview">
                 <?php 
-                $mediaCount = 0; // Számláló a médiafájlok számára
-                $videoCount = 0; // Videók számlálója
-                $totalVideos = 0; // Összes videó száma
+                $mediaCount = 0; // média száma de csak első 5 kell majd
+                $videoCount = 0;  // csak 3 vidi lesz max megjel
+                $totalVideos = 0; // összes videó
                 
                 while ($media = $mediaResult->fetch_assoc()):
                     if (strpos($media['fajl_nev'], '.mp4') !== false || strpos($media['fajl_nev'], '.webm') !== false):
-                        $totalVideos++; // Összes videó számlálása
+                        $totalVideos++; 
                     endif;
                 endwhile;
                 
-                $mediaResult->data_seek(0); // Visszaállítjuk az eredményt a ciklushoz
+                $mediaResult->data_seek(0); // visszaállítjuk az eredményt
                 while ($media = $mediaResult->fetch_assoc()): 
-                    if ($mediaCount < 5): // Csak az első 5 fájl megjelenítése
+                    if ($mediaCount < 5): // csak az első 5 fájl megjelenítése
                         ?>
                         <div class="media-item">
                             <?php if (strpos($media['fajl_nev'], '.jpg') !== false || strpos($media['fajl_nev'], '.png') !== false): ?>
-                                <!-- Kép fájl -->
+                                <!-- kép -->
                                 <img src="../feltoltesek/<?php echo htmlspecialchars($media['fajl_nev']); ?>" alt="<?php echo htmlspecialchars($media['fajl_nev']); ?>">
  <?php elseif (strpos($media['fajl_nev'], '.mp4') !== false || strpos($media['fajl_nev'], '.webm') !== false): ?>
-                                <!-- Videó fájl -->
+                                <!-- videó -->
                                 <?php if ($videoCount < 3): ?>
                                     <div class="video-container">
                                     <video width="200" controls>
@@ -253,13 +250,13 @@ if (!empty($_POST['new_questions'])) {
                                     <?php $videoCount++; ?>
                                 <?php endif; ?>
                             <?php elseif (strpos($media['fajl_nev'], '.mp3') !== false || strpos($media['fajl_nev'], '.wav') !== false): ?>
-                                <!-- Hang fájl -->
+                                <!-- hang fájl -->
                                 <audio controls>
                                 <img src="../feltoltesek/<?php echo htmlspecialchars($media['fajl_nev']); ?>" alt="<?php echo htmlspecialchars($media['fajl_nev']); ?>">
                                 A böngésződ nem támogatja a hang lejátszást.
                                 </audio>
                             <?php else: ?>
-                                <!-- Egyéb fájl típusok, pl. PDF, dokumentumok -->
+                                <!-- egyéb fájl -->
                                 <p><?php echo htmlspecialchars($media['fajl_nev']); ?></p>
                             <?php endif; ?>
                         </div>
@@ -268,19 +265,19 @@ if (!empty($_POST['new_questions'])) {
                     $mediaCount++;
                 endwhile; 
 
-                // Ha több mint 2 videó van, megjelenítjük a hátralévő videók számát
+                // ha több mint 3 videó van, megjelenítjük a hátralévő videók számát
                 if ($totalVideos > 3):
                 ?>
                     <p><strong>Hátralévő videók: <?php echo $totalVideos - 3; ?></strong></p>
                 <?php endif; ?>
             </div>
 
-            <button type="button" id="show-all-media">Összes fájl megjelenítése</button> <!-- Gomb az összes fájl megjelenítésére -->
+            <button type="button" id="show-all-media">Összes fájl megjelenítése</button>
             <div id="all-media" style="display:none;">
                 <h3>Összes Médiafájl:</h3>
                 <?php
-                // Újra lekérdezzük az összes médiafájlt, hogy megjeleníthessük
-                $mediaResult->data_seek(0); // Visszaállítjuk az eredményt
+                // újra lekérdezzük az összes médiafájlt, hogy megjeleníthessük
+                $mediaResult->data_seek(0); // visszaállítjuk az eredményt
                 while ($media = $mediaResult->fetch_assoc()):
                 ?>
                     <div class="media-item">
@@ -289,14 +286,14 @@ if (!empty($_POST['new_questions'])) {
  <?php else: ?>
                             <p><?php echo htmlspecialchars($media['fajl_nev']); ?></p>
                         <?php endif; ?>
-                        <input type="checkbox" name="delete_files[]" value="<?php echo $media['id']; ?>"> Törlés <!-- Törlés checkbox -->
+                        <input type="checkbox" name="delete_files[]" value="<?php echo $media['id']; ?>"> Törlés 
                     </div>
                 <?php endwhile; ?>
             </div>
 
             <input type="file" name="media[]" accept="image/*,video/*,audio/*" multiple><br> <!-- Új médiafájlok feltöltése -->
-            <small>Több fájl is feltölthető.</small><br> <!-- Információs szöveg -->
-            <label for="kitoltesi_cel">Kitöltési cél:</label> <!-- Kitöltési cél mező -->
+            <small>Több fájl is feltölthető.</small><br> 
+            <label for="kitoltesi_cel">Kitöltési cél:</label>
             <input type="text" id="kitoltesi_cel" class="small-input" name="kitoltesi_cel" value="<?php echo htmlspecialchars($project['kitoltesi_cel']); ?>" required>
 
 
@@ -345,21 +342,21 @@ if (!empty($_POST['new_questions'])) {
 </div>
 
 <script>
-const existingQuestions = <?php echo json_encode($letezoKerdesek); ?>
+const existingQuestions = <?php echo json_encode($letezoKerdesek); ?> // létező kérdések
 
-function addQuestion() {
+function addQuestion() { // kérdés hozzáadása
     const questionContainer = document.createElement('div');
     questionContainer.classList.add('question-container');
 
     const index = document.querySelectorAll('.question-container').length;
 
-    const optionsHTML = existingQuestions.map(q => `<option value="${q}">${q}</option>`).join(''); // Létező kérdések legördülő
+    const optionsHTML = existingQuestions.map(q => `<option value="${q}">${q}</option>`).join(''); // létező kérdések legördülő vagy majd újat beírni is lesz lehetőség
 
     questionContainer.innerHTML = `
         <label>Kérdés:</label>
 <select class="custom-question-select" onchange="toggleCustomQuestion(this, ${index})">
     <option value="">-- Új kérdés --</option>
-    ${optionsHTML}
+    ${optionsHTML} 
 </select>
 <input type="text" name="new_questions[${index}][kerdes]" required placeholder="Írd be az új kérdést">
 
@@ -390,33 +387,27 @@ function addQuestion() {
         <button type="button" class="remove-button" onclick="removeQuestion(this)">Eltávolítás</button>
     `;
 
-    document.getElementById('questions').appendChild(questionContainer);
+    document.getElementById('questions').appendChild(questionContainer); // ezzel kerül jó helyre
 }
-
-function toggleRequiredField(selectElem) {
-    const container = selectElem.closest('.question-container');
-    const dateOptions = container.querySelector('.date-options');
-    
-    // Ha a válasz típusa "date" akkor jelenítjük meg a dátum input mezőt
-    if (selectElem.value === 'date') {
-        dateOptions.style.display = 'block';
-    } else {
-        dateOptions.style.display = 'none';
-    }    
-}
+// típus szerint datehez és enumhoz
 function toggleRequiredField(elem) {
     const questionContainer = elem.closest('.question-container');
     const enumOptions = questionContainer.querySelector('.enum-options');
+    const dateOptions = questionContainer.querySelector('.date-options');
 
     if (elem.tagName === 'SELECT') {
-        // Ha a válasz típusa 'enum', akkor a válaszlehetőségek input mezőjét jelenítjük meg
+        // enum opció megjelenítése
         enumOptions.style.display = elem.value === 'enum' ? 'block' : 'none';
+        
+        // date opció megjelenítése
+        dateOptions.style.display = elem.value === 'date' ? 'block' : 'none';
     }
 }
 
 
 
 
+// kérdés törlése
 function removeQuestion(button) {
     const container = button.closest('.question-container');
     const deleteFlag = container.querySelector('.delete-flag');
@@ -427,38 +418,38 @@ function removeQuestion(button) {
         container.remove();
     }
 }
-
+// ha meglévő kérdés van akkoor ne legyen input mező
 function toggleCustomQuestion(selectElem, index) {
         const container = selectElem.closest('.question-container');
         const input = container.querySelector(`input[name="new_questions[${index}][kerdes]"]`);
         const hiddenInput = container.querySelector(`#kerdes_select_${index}`);
 
         if (selectElem.value !== "") {
-            input.value = selectElem.value;  // A legördülő listából választott kérdés beállítása
-            input.disabled = true; // Ha van kiválasztott kérdés, ne lehessen szerkeszteni
-            hiddenInput.value = selectElem.value; // Az elrejtett mezőbe is beírjuk
+            input.value = selectElem.value;  // legördülő listából választott kérdés beállítása
+            input.disabled = true; // ha van kiválasztott kérdés, ne lehessen szerkeszteni
+            hiddenInput.value = selectElem.value; // az elrejtett mezőbe is beírjuk
         } else {
-            input.value = ""; // Ha nincs kiválasztott kérdés, a mezőt töröljük
-            input.disabled = false; // Ha nincs választás, akkor szerkeszthető
-            hiddenInput.value = ""; // Az elrejtett mező törlésre kerül
+            input.value = ""; // nincs kiválasztott kérdés, a mezőt töröljük
+            input.disabled = false; // nincs választás, akkor szerkeszthető
+            hiddenInput.value = ""; // az elrejtett mező törlésre kerül
         }
     }
 
 
-// Új ablak megnyitása az összes médiafájl megjelenítéséhez
+// új ablak megnyitása az összes médiafájl megjelenítéséhez
 document.getElementById('show-all-media').onclick = function() {
-    // Új ablakot nyitunk a médiafájlok megjelenítéséhez
+
     window.open('torlendok.php?id=<?php echo $projektId; ?>', 'MediaWindow', 'width=800,height=600');
 };
 
-
+// média frissítése media-preview
 function refreshMedia() {
     // AJAX kérés küldése
     var xhr = new XMLHttpRequest();
     xhr.open('GET', 'frissit_media.php?id=<?php echo htmlspecialchars($_GET['id']); ?>', true);
     xhr.onreadystatechange = function () {
         if (xhr.readyState == 4 && xhr.status == 200) {
-            // A válasz (új HTML tartalom) frissíti a képek div-jét
+            // media-preview frissítése
             document.querySelector('.media-preview').innerHTML = xhr.responseText;
         }
     };

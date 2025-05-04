@@ -1,17 +1,17 @@
 <?php
 session_start();
-// Ellenőrzi, hogy az admin be van-e jelentkezve
+// admin e
 if (!isset($_SESSION['felhasznalonev']) || $_SESSION['felhasznalonev'] !== 'admin') {
-    header('Location: bejelentkezes.php');// Ha nincs bejelentkezve admin, átirányítja a bejelentkezési oldalra
+    header('Location: bejelentkezes.php');// ha nem admin
     exit();
 }
 
 if (isset($_GET['id'])) {
-    $userId = $_GET['id'];// A felhasználó ID-jának tárolása a GET paraméterből
+    $userId = $_GET['id'];// felh id
 
-    require_once "db_connect.php";
+    require_once "db_connect.php"; // adatb kapcs
 
-    $sql = "UPDATE felhasznalok SET letiltva = FALSE WHERE id = '$userId'"; // SQL lekérdezés a felhasználó letiltásának feloldásához
+    $sql = "UPDATE felhasznalok SET letiltva = FALSE WHERE id = '$userId'"; // letiltas feloldasa
     if ($conn->query($sql) === TRUE) {
         header("Location: felhasznalok.php");
         exit();

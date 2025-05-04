@@ -1,14 +1,14 @@
 <?php
 session_start();
-
+// felh bejel ell
 if (!isset($_SESSION['felhasznalonev'])) {
     header("Location: bejelentkezes.php");
     exit();
 }
-
+// adatb kapcs
 require_once "db_connect.php";
 
-// Már meglévő kérdések lekérdezése
+// már meglévő kérdések lekérdezése
 $letezoKerdesek = [];
 $kerdesQuery = "SELECT DISTINCT kerdes FROM kerdesek";
 $kerdesEredmeny = $conn->query($kerdesQuery);
@@ -28,16 +28,16 @@ while ($row = $kerdesEredmeny->fetch_assoc()) {
     <link rel="stylesheet" href="../css2/reg.css?v=1.1">
     <link rel="stylesheet" href="../css2/ujprojekt.css?v=1.2">
     <script>
-        const existingQuestions = <?php echo json_encode($letezoKerdesek); ?>;
+        const existingQuestions = <?php echo json_encode($letezoKerdesek); ?>; // már létező kérdések
 
-
+        // kérdés hozzáadása
         function addQuestion() {
             const questionContainer = document.createElement('div');
             questionContainer.classList.add('question-container');
 
             const index = document.querySelectorAll('.question-container').length;
 
-            const optionsHTML = existingQuestions.map(q => `<option value="${q}">${q}</option>`).join('');
+            const optionsHTML = existingQuestions.map(q => `<option value="${q}">${q}</option>`).join(''); // meglévők
 
             questionContainer.innerHTML = `
                 <label>Kérdés:</label>
@@ -68,7 +68,7 @@ while ($row = $kerdesEredmeny->fetch_assoc()) {
 
                 <button type="button" class="remove-question" onclick="removeQuestion(this)">Eltávolítás</button>
             `;
-
+            // legördülő menü és enum kezelésénél az a plusz mező
             questionContainer.querySelector('select[name="questions[' + index + '][valasz_tipus]"]').addEventListener('change', function () {
                 const enumOptions = questionContainer.querySelector('.enum-options');
                 enumOptions.style.display = this.value === 'enum' ? 'block' : 'none';
@@ -76,7 +76,7 @@ while ($row = $kerdesEredmeny->fetch_assoc()) {
 
             document.getElementById('questions').appendChild(questionContainer);
         }
-
+        // típus kezelés
         function toggleCustomQuestion(selectElem, index) {
     const container = selectElem.closest('.question-container');
     const input = container.querySelector(`input[name="questions[${index}][kerdes]"]`);
@@ -85,20 +85,20 @@ while ($row = $kerdesEredmeny->fetch_assoc()) {
     // Ha van választás a legördülő menüből
     if (selectElem.value !== '') {
         input.value = selectElem.value;
-        hiddenInput.value = selectElem.value; // Frissítjük a rejtett mezőt
+        hiddenInput.value = selectElem.value; // frissítjük a rejtett mezőt a kiválasztottra
     } else {
-        input.value = ''; // Ha az "Új kérdés" opció van kiválasztva, akkor üres lesz
-        hiddenInput.value = ''; // Frissítjük a rejtett mezőt is
+        input.value = ''; // ha az "Új kérdés" opció van kiválasztva, akkor üres lesz
+        hiddenInput.value = ''; // frissítjük a rejtett mezőt is
     }
 
-    input.disabled = selectElem.value !== ''; // Ha van kiválasztott kérdés, akkor az input mező ne legyen szerkeszthető
+    input.disabled = selectElem.value !== ''; // ha van kiválasztott kérdés, akkor az input mező ne legyen szerkeszthető
 }
 
-
+// kérdés törlése
         function removeQuestion(button) {
             button.parentElement.remove();
         }
-
+// enum esetén válaszlehetőségek
         function toggleRequiredField(elem) {
     const questionContainer = elem.closest('.question-container');
     const enumOptions = questionContainer.querySelector('.enum-options');
@@ -154,82 +154,130 @@ while ($row = $kerdesEredmeny->fetch_assoc()) {
             </form>
 
             <?php
-            if ($_SERVER["REQUEST_METHOD"] == "POST") {
-                $projectName = $conn->real_escape_string($_POST['project_name']);
-                $projectDescription = $conn->real_escape_string($_POST['project_description']);
-                $kitoltesiCel = (int) $_POST['kitoltesi_cel'];
 
-                $coverImageName = $_FILES['cover_image']['name'];
-                $coverImageTmpName = $_FILES['cover_image']['tmp_name'];
-                $coverImageTarget = "../feltoltesek/" . basename($coverImageName);
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-                if (!file_exists($coverImageTmpName)) {
-                    die("Hiba: A feltöltött borítókép nem létezik!");
-                }
+  
+    $projectName = $conn->real_escape_string($_POST['project_name']);
 
-                if (!move_uploaded_file($coverImageTmpName, $coverImageTarget)) {
-                    die("Hiba a borítókép feltöltésekor!");
-                }
+    $projectDescription = $conn->real_escape_string($_POST['project_description']);
 
-                $uploadedFiles = [];
-                foreach ($_FILES['files']['name'] as $index => $fileName) {
-                    $fileTmpName = $_FILES['files']['tmp_name'][$index];
-                    $fileType = (strpos($_FILES['files']['type'][$index], 'image') !== false) ? 'kep' : 'video';
-                    $fileTarget = "../feltoltesek/" . basename($fileName);
 
-                    if (move_uploaded_file($fileTmpName, $fileTarget)) {
-                        $uploadedFiles[] = ['fileName' => $fileName, 'type' => $fileType];
-                    }
-                }
+    $kitoltesiCel = (int) $_POST['kitoltesi_cel'];
 
-                $felhasznalonev = $_SESSION['felhasznalonev'];
-                $sqlUser = "SELECT id FROM felhasznalok WHERE felhasznalonev = '$felhasznalonev'";
-                $resultUser = $conn->query($sqlUser);
-                $userId = $resultUser->fetch_assoc()['id'];
+   
+    $coverImageName = $_FILES['cover_image']['name'];
 
-                $sqlProject = "INSERT INTO projektek (felhasznalok_id, nev, leiras, fokep, kitoltesi_cel) 
-                               VALUES ('$userId', '$projectName', '$projectDescription', '$coverImageName', '$kitoltesiCel')";
 
-                if ($conn->query($sqlProject) === TRUE) {
-                    $projectId = $conn->insert_id;
+    $coverImageTmpName = $_FILES['cover_image']['tmp_name'];
 
-                    if (!empty($_POST['questions'])) {
-                        foreach ($_POST['questions'] as $question) {
-                            $kerdes = !empty($question['hidden_kerdes']) ? $conn->real_escape_string($question['hidden_kerdes']) : $conn->real_escape_string($question['kerdes']);
-                            $valaszTipus = $conn->real_escape_string($question['valasz_tipus']);
-                            $lehetsegesValaszok = isset($question['lehetseges_valaszok']) ? $conn->real_escape_string($question['lehetseges_valaszok']) : NULL;
-                            $required = isset($question['required']) ? 1 : 0;
-                        
-                            $sqlQuestion = "INSERT INTO kerdesek (projekt_id, kerdes, valasz_tipus, lehetseges_valaszok, required) 
-                                            VALUES ('$projectId', '$kerdes', '$valaszTipus', '$lehetsegesValaszok', '$required')";
-                            $conn->query($sqlQuestion);
+   
+    $coverImageTarget = "../feltoltesek/" . basename($coverImageName);
 
-                            // Dátum válaszok mentése
-                if ($valaszTipus === 'date' && $valasz) {
-                    $sqlAnswer = "INSERT INTO kerdesek_valaszok (kerdes_id, valasz) 
-                                  VALUES ('$question_id', '$valasz')";
-                    $conn->query($sqlAnswer);
-                }
-                        }
-                        
-                    }
+    // ell hogy a borítókép létezik e
+    if (!file_exists($coverImageTmpName)) {
+        die("Hiba: A feltöltött borítókép nem létezik!");
+    }
 
-                    foreach ($uploadedFiles as $file) {
-                        $fileName = $file['fileName'];
-                        $fileType = $file['type'];
-                        $sqlFile = "INSERT INTO fajlok (projekt_id, fajl_nev, tipus) 
-                                    VALUES ('$projectId', '$fileName', '$fileType')";
-                        $conn->query($sqlFile);
-                    }
+    // borító  áthely
+    if (!move_uploaded_file($coverImageTmpName, $coverImageTarget)) {
+        die("Hiba a borítókép feltöltésekor!");
+    }
 
-                    echo "<script>alert('Sikeres projekt létrehozás!');</script>";
-                    echo "<script>window.location.href = 'projektjeim.php';</script>";
-                    exit();
-                } else {
-                    echo "Hiba történt a projekt létrehozásakor: " . $conn->error;
-                }
+    // üres tömb létrehozása a feltöltött fájlok nyilvántartásához
+    $uploadedFiles = [];
+
+    // végigmegy az összes fájlon, amit feltöltöttek 
+    foreach ($_FILES['files']['name'] as $index => $fileName) {
+
+        // fájl ideiglenes neve
+        $fileTmpName = $_FILES['files']['tmp_name'][$index];
+
+        // fájl kép vagy videó
+        $fileType = (strpos($_FILES['files']['type'][$index], 'image') !== false) ? 'kep' : 'video';
+
+        // ahova menteni kell
+        $fileTarget = "../feltoltesek/" . basename($fileName);
+
+        // fájl sikeresen áthelyezésre került a célba, hozzáadjuk a tömbhöz
+        if (move_uploaded_file($fileTmpName, $fileTarget)) {
+            $uploadedFiles[] = ['fileName' => $fileName, 'type' => $fileType];
+        }
+    }
+
+    $felhasznalonev = $_SESSION['felhasznalonev'];
+
+    // felh id lekérése
+    $sqlUser = "SELECT id FROM felhasznalok WHERE felhasznalonev = '$felhasznalonev'";
+    $resultUser = $conn->query($sqlUser);
+    $userId = $resultUser->fetch_assoc()['id'];
+
+    // beszúrja a projektet az adatbázisba
+    $sqlProject = "INSERT INTO projektek (felhasznalok_id, nev, leiras, fokep, kitoltesi_cel) 
+                   VALUES ('$userId', '$projectName', '$projectDescription', '$coverImageName', '$kitoltesiCel')";
+
+    // ha a beszúrás sikeres volt
+    if ($conn->query($sqlProject) === TRUE) {
+
+        // projekt id
+        $projectId = $conn->insert_id;
+
+        // ha vannak kérdések az űrlapban
+        if (!empty($_POST['questions'])) {
+            foreach ($_POST['questions'] as $question) {
+
+                // ha van rejtett kérdés, azt használja, egyébként a láthatót
+                $kerdes = !empty($question['hidden_kerdes']) ? $conn->real_escape_string($question['hidden_kerdes']) : $conn->real_escape_string($question['kerdes']);
+                $valaszTipus = $conn->real_escape_string($question['valasz_tipus']);
+
+               
+                $lehetsegesValaszok = isset($question['lehetseges_valaszok']) ? $conn->real_escape_string($question['lehetseges_valaszok']) : NULL;
+
+              
+                $required = isset($question['required']) ? 1 : 0;
+
+                // kérdés beszúrása az adatbázisba
+                $sqlQuestion = "INSERT INTO kerdesek (projekt_id, kerdes, valasz_tipus, lehetseges_valaszok, required) 
+                                VALUES ('$projectId', '$kerdes', '$valaszTipus', '$lehetsegesValaszok', '$required')";
+                $conn->query($sqlQuestion);
+
+                
+$question_id = $conn->insert_id;
+
+             
+if ($valaszTipus === 'date' && isset($question['valasz']) && !empty($question['valasz'])) {
+    $valasz = $conn->real_escape_string($question['valasz']);
+
+    $sqlAnswer = "INSERT INTO kerdesek_valaszok (kerdes_id, valasz) 
+                  VALUES ('$question_id', '$valasz')";
+    $conn->query($sqlAnswer);
+}
             }
-            ?>
+        }
+
+        // feltöltött fájlok mentése az adatbázisba
+        foreach ($uploadedFiles as $file) {
+            $fileName = $file['fileName'];
+            $fileType = $file['type'];
+
+            $sqlFile = "INSERT INTO fajlok (projekt_id, fajl_nev, tipus) 
+                        VALUES ('$projectId', '$fileName', '$fileType')";
+            $conn->query($sqlFile);
+        }
+
+
+        echo "<script>alert('Sikeres projekt létrehozás!');</script>";
+
+
+        echo "<script>window.location.href = 'projektjeim.php';</script>";
+        exit();
+    } else {
+      
+        echo "Hiba történt a projekt létrehozásakor: " . $conn->error;
+    }
+}
+?>
+
         </div>
     </div>
 </body>

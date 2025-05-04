@@ -1,6 +1,6 @@
 <?php
 session_start(); // session indítása
-ob_start(); // kimenet pufferelése
+ob_start(); // kimenet pufferelése hogy ne egyből mentse az adatokat
 ?>
 
 <!DOCTYPE html>
@@ -30,7 +30,7 @@ ob_start(); // kimenet pufferelése
             return true;
         }
 
-        // dátum mező megjelenítés kezelése legördülő alapján
+        // dátum mező megjelenítés kezelése aptáras bigyó alapján
         function showDateInput(selectElem, questionId) {
             const questionContainer = selectElem.closest('.question-container');
             let dateInput = questionContainer.querySelector('input[type="date"]'); // dátum keres
@@ -52,14 +52,14 @@ ob_start(); // kimenet pufferelése
             }
         }
 
-        // oldal betöltéskor események hozzárendelése
+        // oldal betöltéskor
         document.addEventListener("DOMContentLoaded", function() {
             const selects = document.querySelectorAll('select'); // összes select keresése
-            selects.forEach(function(select) {
+            selects.forEach(function(select) { // összes selecten végigmegy
                 const questionId = select.name.match(/\d+/)[0]; // kérdés id kiszedése
-                showDateInput(select, questionId); // kezdeti megjelenítés
+                showDateInput(select, questionId); // fgv hívás
                 select.addEventListener('change', function() {
-                    showDateInput(select, questionId); // változás figyelés
+                    showDateInput(select, questionId); // változás figyelés hogyha változik és kéne date frissüljön
                 });
             });
         });
@@ -74,7 +74,7 @@ ob_start(); // kimenet pufferelése
 
         <div class="instructions">Kérjük, töltse ki a kitöltés előtt az alábbiakat:</div>
 
-        <div class="checkbox-container"> <!-- ászf elfogadása -->
+        <div class="checkbox-container"> <!-- ászf elfogadása miatt kell -->
             <label>
                 <a href="../html/aszf.html" target="_blank" style="padding: 10px;">ÁSZF elolvasása</a>
             </label><br>
@@ -87,7 +87,7 @@ ob_start(); // kimenet pufferelése
         $projekt_id = isset($_GET['projekt_id']) ? intval($_GET['projekt_id']) : null;
         if ($projekt_id === null) {
             echo "Nincs projekt kiválasztva.";
-            exit(); // kilépés ha nincs projekt
+            exit(); // nincs projekt
         }
 
         // adatb kapcsolódás
@@ -154,10 +154,10 @@ ob_start(); // kimenet pufferelése
                 // szám
                 echo '<input type="number" name="valasz[' . $row['id'] . ']"' . ($required == 1 ? ' required' : '') . ' placeholder="Írd be a számot...">';
             } elseif ($valasz_tipus == 'string') {
-                // hosszabb szöveg
+                // hosszabb szöveg de ezt valszleg ki kell szedjem majd mert nem használom fel végül
                 echo '<textarea name="valasz[' . $row['id'] . ']"' . ($required == 1 ? ' required' : '') . ' placeholder="Írd be a válaszodat..."></textarea>';
             } elseif ($valasz_tipus == 'date') {
-                // dátum beírás
+                // dátum
                 echo '<input type="date" name="valasz[' . $row['id'] . ']" min="1900-01-01" max="2020-01-01"' . ($required == 1 ? ' required' : '') . '>';
             }
 
@@ -166,11 +166,11 @@ ob_start(); // kimenet pufferelése
 
         // gombok
         echo '<div class="button-container">';
-        echo '<a class="back-button" href="projektek.php">Vissza a projektekhez</a>'; // vissza link
-        echo '<button class="continue-button" type="submit">Tovább</button>'; // tovább gomb
+        echo '<a class="back-button" href="projektek.php">Vissza a projektekhez</a>'; // vissza
+        echo '<button class="continue-button" type="submit">Tovább</button>'; // tovább
         echo '</div>';
 
-        echo '</form>'; // form vége
+        echo '</form>';
 
         // ha elküldték a formot
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {

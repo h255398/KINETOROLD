@@ -1,17 +1,17 @@
 <?php
 session_start();
 
-// Ellenőrizzük, hogy az admin be van-e jelentkezve
+// admin e
 if (!isset($_SESSION['felhasznalonev']) || $_SESSION['felhasznalonev'] !== 'admin') {
-    // Ha nem admin van bejelentkezve, átirányítjuk a bejelentkezési oldalra
+
     header('Location: bejelentkezes.php');
     exit();
 }
 
-// Adatbázis kapcsolat beállítása
+// db kapcs
 require_once "db_connect.php";
 
-// SQL lekérdezés a projektek lekérésére
+// projektek lekérdezése
 $sql = "SELECT 
             projektek.id AS projekt_id, 
             projektek.nev AS projekt_nev, 
@@ -48,7 +48,6 @@ $result = $conn->query($sql);
         </div>
     </header>
 
-    <!-- Navigációs menü -->
     <nav>
         <ul>
             <li><a href="osszesprojekt.php">Összes projekt</a></li>
@@ -56,10 +55,9 @@ $result = $conn->query($sql);
         </ul>
     </nav>
 
-    <!-- Container a projektek megjelenítéséhez -->
+
     <div class="container">
         <h2>Összes projekt</h2>
-        <!-- Exportálás összes projekt gomb -->
         <div class="export-container">
             <?php
             if (isset($_SESSION['felhasznalonev']) && $_SESSION['felhasznalonev'] === 'admin') {
@@ -79,12 +77,11 @@ $result = $conn->query($sql);
             </thead>
             <tbody>
                 <?php
-                // Ha van eredmény, akkor végigmegyünk a projektek listáján és kiírjuk őket
+                // projektek listáján végig és kiírni
                 if ($result->num_rows > 0) {
                     while ($row = $result->fetch_assoc()) {
                         $projectName = $row['projekt_nev'];
                         $creator = htmlspecialchars($row['felhasznalo_nev']);
-                        $status = $row['letiltva'] ? " (Letiltva)" : ""; // Ellenőrzés a logikai értékkel
                         $shortName = (strlen($projectName) > 20) ? substr($projectName, 0, 20) . "..." : $projectName;
                         $projectId = $row['projekt_id'];
 
@@ -92,7 +89,7 @@ $result = $conn->query($sql);
 
                         echo "<tr>
                             <td><span class='project-name' onclick='showModal(\"$projectName\")'>" . htmlspecialchars($shortName) . "</span></td>
-                            <td>{$creator}{$status}</td>
+                            <td>{$creator}</td>
                             <td>" . htmlspecialchars($row['eddigi_kitoltesek']) . "</td>
                             <td>" . htmlspecialchars($row['kitoltesi_cel']) . "</td>
                             <td><a href='$exportUrl' class='export-button'>Exportálás Excelbe</a></td>
@@ -102,14 +99,13 @@ $result = $conn->query($sql);
                     echo "<tr><td colspan='5'>Nincs projekt az adatbázisban.</td></tr>";
                 }
 
-                // Adatbázis kapcsolat lezárása
                 $conn->close();
                 ?>
             </tbody>
         </table>
     </div>
 
-    <!-- Modal -->
+    <!-- Modal (felugró ablak ha nem lenne látható a projekt neve) -->
     <div id="myModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal()">&times;</span>
@@ -120,20 +116,21 @@ $result = $conn->query($sql);
 
     <!-- JavaScript a modal működéséhez -->
     <script>
+        // megnyitja
         function showModal(projectName) {
             document.getElementById("fullProjectName").innerText = projectName;
             document.getElementById("myModal").style.display = "block";
         }
-
+        // bezárja
         function closeModal() {
             document.getElementById("myModal").style.display = "none";
         }
-
+        /* ez az lenne ha a háttérre kattintunk akkor is bezárja
         window.onclick = function (event) {
             if (event.target == document.getElementById("myModal")) {
                 closeModal();
             }
-        }
+        }*/
     </script>
 
 </body>

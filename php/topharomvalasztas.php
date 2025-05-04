@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-// Ellenőrizzük, hogy van-e projekt ID
+// ell projekt id
 $projekt_id = isset($_GET['projekt_id']) ? intval($_GET['projekt_id']) : null;
 if ($projekt_id === null) {
     echo "Hiba: Nincs projekt azonosító!";
@@ -20,15 +20,15 @@ if ($projekt_id === null) {
             text-align: center;
             margin: 50px;
             background-image: url('../oldalra_kepek/hatterkep.jfif');
-            /* Háttérkép elérési útvonala */
+            
             background-size: cover;
-            /* A kép lefedi az egész ablakot */
+           
             background-position: center;
-            /* Középre igazított kép */
+            
             background-repeat: no-repeat;
-            /* Nincs ismétlés */
+           
             background-attachment: fixed;
-            /* Fixált háttérkép */
+           
         }
 
         .button-container {

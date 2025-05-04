@@ -1,7 +1,7 @@
 <?php
-session_start(); // Session indítása
+session_start();
         
-        // Ellenőrzés, hogy a felhasználó be van-e jelentkezve
+        // felh bejel ell
         if (!isset($_SESSION['felhasznalonev'])) {
             header("Location: bejelentkezes.php");
             exit();
@@ -41,35 +41,35 @@ session_start(); // Session indítása
         <?php
         
 
-        // Kapcsolódás az adatbázishoz
+        // adatb kapcs
         require_once "db_connect.php";
 
-        // A bejelentkezett felhasználó ID-jának lekérdezése
+        // felh id lekér
         $felhasznalonev = $_SESSION['felhasznalonev'];
         $sqlUser = "SELECT id FROM felhasznalok WHERE felhasznalonev = '$felhasznalonev'";
         $userResult = $conn->query($sqlUser);
 
         if ($userResult && $userResult->num_rows > 0) {
-            $userId = $userResult->fetch_assoc()['id']; // Felhasználó ID
+            $userId = $userResult->fetch_assoc()['id']; // felh id
         } else {
             echo "Hiba történt a felhasználó ID-jának lekérdezésekor.";
             exit();
         }
 
-        // Lekérdezzük a felhasználó projektjeit, beleértve az eddigi kitöltések számát és a kitöltési célt is
+        // adott felh projekttjei és adatok hozzá
         $sql = "SELECT id, nev, leiras, fokep, eddigi_kitoltesek, kitoltesi_cel FROM projektek WHERE felhasznalok_id = '$userId'";
         $result = $conn->query($sql);
 
         if ($result->num_rows > 0) {
             while ($row = $result->fetch_assoc()) {
-                echo '<div class="project-box">';
+                echo '<div class="project-box">'; // ezt is boxba írjuk
                 echo '<a href="projekt_reszletek.php?id=' . $row['id'] . '">';
                 echo '<img src="../feltoltesek/' . htmlspecialchars($row['fokep']) . '" alt="' . htmlspecialchars($row['nev']) . '">';
 
-                // Projekt név megjelenítése
+                // projekt név 
                 $projectName = htmlspecialchars($row['nev']);
 
-                // Ha a projekt neve hosszabb, mint 10 karakter, rövidítsük le és adjunk hozzá "..."
+                // ha hosszabb mint 10 akkor ...
                 if (strlen($projectName) > 10) {
                     $displayName = substr($projectName, 0, 10) . '...';  // Az első 10 karakter + "..."
                 } else {
@@ -81,14 +81,14 @@ session_start(); // Session indítása
                 </div>';
 
 
-                // Leírás rövidítése
+                // leírás rövidítése 50 után
                 $leiras = htmlspecialchars($row['leiras']);
-                if (strlen($leiras) > 10) {
-                    $leiras = substr($leiras, 0, 10) . '...';
+                if (strlen($leiras) > 50) {
+                    $leiras = substr($leiras, 0, 50) . '...';
                 }
                 echo '<div class="project-description">' . $leiras . '</div>';
 
-                // Kitöltések számának és a kitöltési célnak megjelenítése
+                // kitöltési szám és cél
                 echo '<div class="project-kitoltesek">Kitöltések száma: ' . htmlspecialchars($row['eddigi_kitoltesek']) . '</div>';
                 echo '<div class="project-target">Kitöltési cél: ' . htmlspecialchars($row['kitoltesi_cel']) . '</div>';
                 echo '</a>';

@@ -1,35 +1,33 @@
 <?php
-session_start();
+session_start(); //EZT HOL HAZSNALOM MEGKERESNI
 
-// Ellenőrzés, hogy a felhasználó be van-e jelentkezve
+// felh bejel ell
 if (!isset($_SESSION['felhasznalonev'])) {
     header("Location: bejelentkezes.php");
     exit();
 }
 
-// Kapcsolódás az adatbázishoz
+// adatb kapcs
 require_once "db_connect.php";
 
-$messages = []; // Üzenetek tárolása
+$messages = []; // üzenetek tárolására
 
-// Kérdések mentése
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $projectId = isset($_POST['project_id']) ? $_POST['project_id'] : null; // A projekt ID
+    $projectId = isset($_POST['project_id']) ? $_POST['project_id'] : null; // projekt ID
 
-    if (!empty($_POST['questions'])) {
+    if (!empty($_POST['questions'])) { // ha van kérdés mező
         foreach ($_POST['questions'] as $question) {
             $kerdes = isset($question['kerdes']) ? $conn->real_escape_string($question['kerdes']) : '';
             $valaszTipus = isset($question['valasz_tipus']) ? $conn->real_escape_string($question['valasz_tipus']) : '';
             $lehetsegesValaszok = isset($question['lehetseges_valaszok']) ? $conn->real_escape_string($question['lehetseges_valaszok']) : '';
 
-            // Kérdés beszúrása
             if (!empty($kerdes) && !empty($valaszTipus)) {
-                // Csak akkor ellenőrizzük a lehetseges_valaszok mezőt, ha a válasz típusa enum
+                // csak akkor ellenőrizzük a lehetseges_valaszok mezőt, ha a válasz típusa enum
                 if ($valaszTipus === 'enum' && empty($lehetsegesValaszok)) {
                     $messages[] = "A 'lehetseges_valaszok' mező kitöltése kötelező, ha a válasz típusa 'enum'.";
-                    continue; // Ugrás a következő kérdésre
+                    continue; // kövi kérdés
                 }
-
+                // beszúrás
                 $sqlQuestion = "INSERT INTO kerdesek (projekt_id, kerdes, valasz_tipus, lehetseges_valaszok) 
                 VALUES ($projectId, '$kerdes', '$valaszTipus', '$lehetsegesValaszok')";
 
@@ -135,7 +133,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <div class="form-container">
             <h2>Kérdések hozzáadása a projekthez</h2>
 
-            <!-- Itt jelenítjük meg az üzeneteket -->
+            
             <div id="message-container">
                 <?php if (!empty($messages)): ?>
                     <?php foreach ($messages as $message): ?>
@@ -158,5 +156,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </html>
 
 <?php
-$conn->close(); // Kapcsolat bezárása
+$conn->close(); 
 ?>

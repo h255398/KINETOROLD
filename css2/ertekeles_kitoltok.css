@@ -122,16 +122,16 @@ select {
 
 .checkbox-container label {
   display: inline-block;
-  margin-right: 10px; /* Különbség a link és a checkbox között */
+  margin-right: 10px; 
 }
 
 .checkbox-container a {
-  margin-bottom: 5px; /* Térköz a link és a checkbox között */
-  display: inline-block; /* Az A tag blokkszintű elemmé válik */
-  color: #007BFF; /* Link színe */
+  margin-bottom: 5px; 
+  display: inline-block; 
+  color: #007BFF; 
 }
 
 .checkbox-container input[type="checkbox"] {
-  margin-right: 5px; /* Kis térköz a checkbox és a label között */
+  margin-right: 5px; 
 }
 

@@ -1,17 +1,17 @@
 <?php
 session_start();
 
-// Ellenőrizzük, hogy az admin be van-e jelentkezve
+// ell, hogy az admin be van-e jelentkezve
 if (!isset($_SESSION['felhasznalonev']) || $_SESSION['felhasznalonev'] !== 'admin') {
-    // Ha nem admin van bejelentkezve, átirányítjuk a bejelentkezési oldalra
+    // ha nem admin
     header('Location: bejelentkezes.php');
     exit();
 }
 
-// Adatbázis kapcsolat beállítása
+// adatb kapcs
 require_once "db_connect.php";
 
-// SQL lekérdezés a felhasználók lekérésére, az admin felhasználó kiszűrésével
+// felhasználók lekérése kivéve admin
 $sql = "SELECT id, felhasznalonev, email, letiltva FROM felhasznalok WHERE felhasznalonev != 'admin'";
 $result = $conn->query($sql);
 ?>
@@ -22,7 +22,7 @@ $result = $conn->query($sql);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Felhasználók - Admin</title>
+    <title>Admin</title>
     <link rel="stylesheet" href="../css2/kezdolap.css?v=1.1">
 
     <link rel="stylesheet" href="../css2/felhasznalok.css?v=1.1">
@@ -57,10 +57,10 @@ $result = $conn->query($sql);
             </thead>
             <tbody>
                 <?php
-                // Ha van eredmény, akkor végigmegyünk a felhasználók listáján és kiírjuk őket
+                // ha van felhasználó akkor kiírni
                 if ($result->num_rows > 0) {
                     while ($row = $result->fetch_assoc()) {
-                        // Felhasználó adatok
+                        // felhasználó adatok
                         $username = htmlspecialchars($row['felhasznalonev']);
                         $email = htmlspecialchars($row['email']);
                         $userId = $row['id'];
@@ -81,7 +81,6 @@ $result = $conn->query($sql);
                     echo "<tr><td colspan='3'>Nincs felhasználó az adatbázisban.</td></tr>";
                 }
 
-                // Adatbázis kapcsolat lezárása
                 $conn->close();
                 ?>
             </tbody>

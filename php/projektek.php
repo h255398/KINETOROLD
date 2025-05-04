@@ -31,34 +31,35 @@
 
     <div class="container">
         <?php
+        // adatb kapcs
         require_once "db_connect.php";
 
-        // Frissített lekérdezés, hogy az eddigi_kitoltesek mezőt is kiválassza
+        // projektek kiírása
         $sql = "SELECT id, nev, leiras, fokep, eddigi_kitoltesek FROM projektek";
         $result = $conn->query($sql);
 
         if ($result->num_rows > 0) {
             while ($row = $result->fetch_assoc()) {
-                echo '<div class="project-box" id="project-box-small">';
-                echo '<a href="nyilvanos_reszletek.php?projekt_id=' . urlencode($row['id']) . '">';
-                echo '<img src="../feltoltesek/' . htmlspecialchars($row['fokep']) . '" alt="' . htmlspecialchars($row['nev']) . '">';
+                echo '<div class="project-box" id="project-box-small">'; // projekt boxba
+                echo '<a href="nyilvanos_reszletek.php?projekt_id=' . urlencode($row['id']) . '">'; //link a nyilvanos reszletekhez
+                echo '<img src="../feltoltesek/' . htmlspecialchars($row['fokep']) . '" alt="' . htmlspecialchars($row['nev']) . '">'; // borítókép és név
 
-                // Projekt neve rövidítése, ha túl hosszú
+                // projekt név rövidítése, ha túl hosszú
                 $projectName = htmlspecialchars($row['nev']);
-                if (strlen($projectName) > 17) {  // 17 karakterre rövidítjük, ez állítható igény szerint
-                    $projectName = substr($projectName, 0, 17) . '...';
+                if (strlen($projectName) > 10) {  // ha 10 karakternél hosszabb akkor ...
+                    $projectName = substr($projectName, 0, 10) . '...';
                 }
 
                 echo '<div class="project-name"><a href="nyilvanos_reszletek.php?projekt_id=' . urlencode($row['id']) . '">' . $projectName . '</a></div>'; // Linkként visszaállítva
         
 
                 $leiras = htmlspecialchars($row['leiras']);
-                if (strlen($leiras) > 50) {
+                if (strlen($leiras) > 50) { // úgyszint rövidítés de 50 karakter után
                     $leiras = substr($leiras, 0, 50) . '...';
                 }
                 echo '<div class="project-description">' . $leiras . '</div>';
 
-                // Eddigi kitöltések számának megjelenítése
+                // eddigki kitöltések száma
                 echo '<div class="project-kitoltesek">Kitöltések száma: ' . htmlspecialchars($row['eddigi_kitoltesek']) . '</div>';
                 echo '</a>';
                 echo '</div>';

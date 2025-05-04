@@ -33,22 +33,22 @@
         <?php
         require_once "db_connect.php";
 
-        // Ellenőrizzük, hogy van-e projekt_id
+        // projekt id
         if (isset($_GET['projekt_id'])) {
             $projekt_id = intval($_GET['projekt_id']);
 
-            // Lekérdezés a kiválasztott projektre
+            // kiválasztott projekt
             $sql = "SELECT * FROM projektek WHERE id = $projekt_id";
             $result = $conn->query($sql);
 
             if ($result->num_rows > 0) {
                 $row = $result->fetch_assoc();
-                // Projekt részletei
+                // projekt részletei
                 echo '<h2>Az adott projekt részletei:</h2>';
                 echo '<p><strong>A projekt neve:</strong> ' . htmlspecialchars($row['nev']) . '</p>';
                 echo '<p><strong>A projekt leírása:</strong> ' . nl2br(htmlspecialchars($row['leiras'])) . '</p>'; // nl2br a sorok megtartásához
         
-                // Képek számának lekérdezése
+                // képek számának lekérdezése
                 $sql_images = "SELECT COUNT(*) as image_count FROM fajlok WHERE projekt_id = $projekt_id";
                 $result_images = $conn->query($sql_images);
                 $image_count = 0;
@@ -58,16 +58,15 @@
                     $image_count = $image_row['image_count'];
                 }
 
-                // Idő szükséglete a képekhez
-                $total_time = min($image_count / 2, 10); // Maximum 20 fájlhoz számítunk 20 percet
-                echo '<p><strong>Értékelendő fájlok száma:</strong> ' . ($image_count > 20 ? 20 : $image_count) . '</p>';
+                // idő kiszámítása
+                $total_time = min($image_count / 2, 10); // max 20 fájlhoz számítunk 10 percet egyébként /2                echo '<p><strong>Értékelendő fájlok száma:</strong> ' . ($image_count > 20 ? 20 : $image_count) . '</p>';
                 echo '<p><strong>Kb ennyi időt vesz igénybe:</strong> ' . $total_time . ' perc</p>';
 
-                // Eddigi kitöltések számának lekérdezése
-                $eddigi_kitoltesek = htmlspecialchars($row['eddigi_kitoltesek']); // Itt módosítva
-                echo '<p><strong>Eddigi kitöltések száma:</strong> ' . $eddigi_kitoltesek . '</p>'; // Közvetlenül kiírva
+                // eddigi kitöltések számának lekérdezése
+                $eddigi_kitoltesek = htmlspecialchars($row['eddigi_kitoltesek']); 
+                echo '<p><strong>Eddigi kitöltések száma:</strong> ' . $eddigi_kitoltesek . '</p>'; 
         
-                // Gomb a kitöltéshez
+                
                 echo '<a class="button" href="ertekeles_kitoltok.php?projekt_id=' . urlencode($row['id']) . '">Kitöltés</a>';
             } else {
                 echo "<p>Nincs ilyen projekt.</p>";
@@ -76,11 +75,11 @@
             echo "<p>Nincs projekt kiválasztva.</p>";
         }
 
-        // Kapcsolat lezárása
+    
         $conn->close();
         ?>
 
-        <!-- Vissza gomb -->
+  
         <a class="button back-button" onclick="window.history.back()">Vissza</a>
 
     </div>

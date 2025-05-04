@@ -6,7 +6,7 @@ if (!isset($_SESSION['felhasznalonev']) || $_SESSION['felhasznalonev'] !== 'admi
     header('Location: bejelentkezes.php');
     exit();
 }
-if (isset($_GET['id'])) { //ell az id-t
+if (isset($_GET['id'])) { //ell az id-t és kinyerni
     $userId = $_GET['id'];
     // adatb kapcs
     require_once "db_connect.php";
