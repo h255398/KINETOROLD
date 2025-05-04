@@ -1,22 +1,18 @@
 <?php
 // adatb kapcs
 require_once "db_connect.php";
-
 // projekt id
 $projekt_id = isset($_GET['id']) ? $_GET['id'] : null;
-
 if ($projekt_id === null) {
     die("Hiba: Nincs megadva projekt ID!");
 }
-
 // média lekérdezése
 $query = "SELECT * FROM fajlok WHERE projekt_id = ? ORDER BY id ASC LIMIT 5"; // első 5 fájl lekérdezése
-$stmt = $conn->prepare($query); 
+$stmt = $conn->prepare($query);
 $stmt->bind_param("i", $projekt_id);
 $stmt->execute();
 $resultMedia = $stmt->get_result();
 ?>
-
 <div class="media-preview">
     <?php
     $mediaCount = 0; // számláló a médiafájlok számára
@@ -24,7 +20,7 @@ $resultMedia = $stmt->get_result();
         if ($mediaCount < 5): // csak az első 5 fájl megjelenítése
             ?>
             <div class="media-item">
-            <?php
+                <?php
                 $fileName = $media['fajl_nev'];
                 $filePath = '../feltoltesek/' . htmlspecialchars($fileName);
                 // képek, videók kezelése
@@ -40,17 +36,14 @@ $resultMedia = $stmt->get_result();
                     echo '<p>' . htmlspecialchars($fileName) . '</p>'; //más
                 }
                 ?>
-
             </div>
-        <?php
+            <?php
         endif;
         $mediaCount++;
     endwhile;
     ?>
 </div>
-
 <?php
-
 $stmt->close();
 $conn->close();
 ?>

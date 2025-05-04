@@ -1,6 +1,5 @@
 <?php
 session_start();
-
 // ell projekt id
 $projekt_id = isset($_GET['projekt_id']) ? intval($_GET['projekt_id']) : null;
 if ($projekt_id === null) {
@@ -20,15 +19,10 @@ if ($projekt_id === null) {
             text-align: center;
             margin: 50px;
             background-image: url('../oldalra_kepek/hatterkep.jfif');
-            
             background-size: cover;
-           
             background-position: center;
-            
             background-repeat: no-repeat;
-           
             background-attachment: fixed;
-           
         }
 
         .button-container {
@@ -55,15 +49,12 @@ if ($projekt_id === null) {
 </head>
 
 <body>
-
     <h1>Köszönjük az értékelést!</h1>
     <p>Válassz, hogy visszamész a kezdőlapra, vagy megnézed a top 3 legjobbra értékelt képet.</p>
-
     <div class="button-container">
         <a href="../html/kezdolap.html" class="button">Vissza a Kezdőlapra</a>
         <a href="top3.php?projekt_id=<?php echo $projekt_id; ?>" class="button">TOP 3 Kép Megtekintése</a>
     </div>
-
 </body>
 
 </html>

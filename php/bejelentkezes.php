@@ -1,8 +1,9 @@
 <?php
 session_start()
-?>
+    ?>
 <!DOCTYPE html>
 <html lang="hu">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,6 +11,7 @@ session_start()
     <link rel="stylesheet" href="../css2/kezdolap.css?v=1.2">
     <link rel="stylesheet" href="../css2/reg.css?v=1.1">
 </head>
+
 <body>
     <header>
         <h1>Projektértékelő</h1>
@@ -25,7 +27,7 @@ session_start()
         </ul>
     </nav>
     <div class="content">
-        <div class="form-container">  <!-- bejel űrlap -->
+        <div class="form-container"> <!-- bejel űrlap -->
             <h2>Bejelentkezés</h2>
             <form action="" method="post">
                 <label for="username">Felhasználónév:</label>
@@ -33,14 +35,13 @@ session_start()
                 <label for="password">Jelszó:</label>
                 <input type="password" id="password" name="password" required>
                 <input type="submit" value="Bejelentkezem">
-            </form> 
+            </form>
         </div>
     </div>
     <?php
     // POSTtal történik
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         require_once "db_connect.php";
-
         // felhnév és jelszó (real escape string az sql injekciók ellen)
         $felhasznalonev = $conn->real_escape_string($_POST['username']);
         $jelszo = $_POST['password'];
@@ -58,7 +59,7 @@ session_start()
                 // jelszo ell a hashelttel
                 if (password_verify($jelszo, $row['jelszo'])) {
                     // ha sikerült bejel akkor session inditasa
-                   // session_start();
+                    // session_start();
                     $_SESSION['felhasznalo_id'] = $row['id']; // felhaszn azonosítójának tárolása a session-ben
                     $_SESSION['felhasznalonev'] = $felhasznalonev; // felhasznnév tárolása a session-ben
                     // ha admin akkor admin oldalra menjen
@@ -86,4 +87,5 @@ session_start()
     }
     ?>
 </body>
+
 </html>

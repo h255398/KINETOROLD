@@ -1,26 +1,20 @@
 <?php
-session_start(); 
-
+session_start();
 // ell felh bejel
 if (!isset($_SESSION['felhasznalonev'])) {
     header("Location: bejelentkezes.php");
     exit();
 }
-
 // adatb kapcs
 require_once "db_connect.php";
-
 // médiafájlok lekérdezése
 $sqlMedia = "SELECT * FROM fajlok WHERE projekt_id = ?";
 $stmt = $conn->prepare($sqlMedia);
 $stmt->bind_param("i", $_GET['id']);
 $stmt->execute();
 $resultMedia = $stmt->get_result();
-
-
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_files'])) {
     if (!empty($_POST['delete_files'])) {
-       
         foreach ($_POST['delete_files'] as $fileId) {
             // fájl nevének lekérdezése törlés előtt
             $sqlGetFileName = "SELECT fajl_nev FROM fajlok WHERE id = ?";
@@ -28,16 +22,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_files'])) {
             $stmtGetFileName->bind_param("i", $fileId);
             $stmtGetFileName->execute();
             $resultFileName = $stmtGetFileName->get_result();
-
             if ($resultFileName->num_rows > 0) {
                 $fileName = $resultFileName->fetch_assoc()['fajl_nev'];
-
                 // fájl törlése a feltöltések mappából
                 $filePath = "../feltoltesek/" . $fileName;
                 if (file_exists($filePath)) {
-                    unlink($filePath); 
+                    unlink($filePath);
                 }
-
                 // fájl törlése az adatbázisból
                 $sqlDelete = "DELETE FROM fajlok WHERE id = ?";
                 $stmtDelete = $conn->prepare($sqlDelete);
@@ -46,18 +37,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_files'])) {
             }
         }
         // frissítjük a fő ablakot, majd bezárjuk a törlő ablakot
-        echo "<script>alert('A kiválasztott fájlok törölve lettek!'); 
+        echo "<script>alert('A kiválasztott fájlok törölve lettek!');
          window.opener.refreshMedia(); // Hívja a módosítás oldalán lévő függvényt
         window.close();</script>";
-
     } else {
-        
         echo "<script>alert('Nem választott fájlokat a törléshez!'); window.close();</script>";
     }
-    exit; 
+    exit;
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="hu">
 
@@ -140,19 +128,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_files'])) {
 </head>
 
 <body>
-
     <div>
         <h2>Összes Médiafájl Törlése</h2>
         <form method="POST" action="torlendok.php?id=<?php echo htmlspecialchars($_GET['id']); ?>"
             onsubmit="return confirmDeletion();">
-            <div class="media-preview">  
+            <div class="media-preview">
                 <?php while ($media = $resultMedia->fetch_assoc()): ?>
                     <div class="media-item">
-                        
                         <?php if (strpos($media['fajl_nev'], '.jpg') !== false || strpos($media['fajl_nev'], '.jpeg') !== false || strpos($media['fajl_nev'], '.png') !== false): ?>
                             <img src="../feltoltesek/<?php echo htmlspecialchars($media['fajl_nev']); ?>"
                                 alt="<?php echo htmlspecialchars($media['fajl_nev']); ?>">
-                        
                         <?php elseif (strpos($media['fajl_nev'], '.mp4') !== false || strpos($media['fajl_nev'], '.webm') !== false): ?>
                             <video controls>
                                 <source src="../feltoltesek/<?php echo htmlspecialchars($media['fajl_nev']); ?>"
@@ -166,14 +151,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_files'])) {
                     </div>
                 <?php endwhile; ?>
             </div>
-
             <div class="button-container">
                 <input type="submit" value="Fájlok törlése">
                 <input type="button" value="Mégse" onclick="window.close();">
             </div>
         </form>
     </div>
-
     <script>
         function confirmDeletion() { // fájlok törlésének megerősítése
             var checkboxes = document.querySelectorAll('input[name="delete_files[]"]:checked'); // kiválasztja az összes bejelölt checkboxo
@@ -181,12 +164,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_files'])) {
                 alert("Nincs kiválasztott fájl a törléshez.");
                 return false;
             }
-
             var confirmation = confirm("Biztosan törölni akarja a kiválasztott fájlokat?");
             return confirmation;
         }
     </script>
-
 </body>
 
 </html>

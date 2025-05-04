@@ -2,13 +2,13 @@
 session_start(); // session indítása
 ob_start(); // kimenet pufferelése hogy ne egyből mentse az adatokat
 ?>
-
 <!DOCTYPE html>
 <html lang="hu">
+
 <head>
-    <meta charset="UTF-8"> 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
-    <title>Értékelés - Projektértékelő</title> 
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Értékelés - Projektértékelő</title>
     <link rel="stylesheet" href="../css2/ertekeles_kitoltok.css?v=1.6">
     <script>
         // form ellenőrzés a tovább gomb előtt
@@ -18,7 +18,6 @@ ob_start(); // kimenet pufferelése hogy ne egyből mentse az adatokat
                 alert("Az ÁSZF-et el kell fogadni a továbblépéshez!");
                 return false;
             }
-
             // kötelező mezők ellenőrzése
             var inputs = document.querySelectorAll('input[required], select[required], textarea[required]');
             for (var i = 0; i < inputs.length; i++) {
@@ -29,12 +28,10 @@ ob_start(); // kimenet pufferelése hogy ne egyből mentse az adatokat
             }
             return true;
         }
-
         // dátum mező megjelenítés kezelése aptáras bigyó alapján
         function showDateInput(selectElem, questionId) {
             const questionContainer = selectElem.closest('.question-container');
             let dateInput = questionContainer.querySelector('input[type="date"]'); // dátum keres
-
             if (selectElem.value === 'date') {
                 // ha date-t választ
                 if (!dateInput) {
@@ -51,37 +48,33 @@ ob_start(); // kimenet pufferelése hogy ne egyből mentse az adatokat
                 }
             }
         }
-
         // oldal betöltéskor
-        document.addEventListener("DOMContentLoaded", function() {
+        document.addEventListener("DOMContentLoaded", function () {
             const selects = document.querySelectorAll('select'); // összes select keresése
-            selects.forEach(function(select) { // összes selecten végigmegy
+            selects.forEach(function (select) { // összes selecten végigmegy
                 const questionId = select.name.match(/\d+/)[0]; // kérdés id kiszedése
                 showDateInput(select, questionId); // fgv hívás
-                select.addEventListener('change', function() {
+                select.addEventListener('change', function () {
                     showDateInput(select, questionId); // változás figyelés hogyha változik és kéne date frissüljön
                 });
             });
         });
     </script>
 </head>
+
 <body>
     <header>
-        <h1>Az értékelés elkezdése előtt:</h1> 
+        <h1>Az értékelés elkezdése előtt:</h1>
     </header>
-
-    <div class="container"> 
-
+    <div class="container">
         <div class="instructions">Kérjük, töltse ki a kitöltés előtt az alábbiakat:</div>
-
         <div class="checkbox-container"> <!-- ászf elfogadása miatt kell -->
             <label>
                 <a href="../html/aszf.html" target="_blank" style="padding: 10px;">ÁSZF elolvasása</a>
             </label><br>
-            <input type="checkbox" id="accept-aszf" name="accept-aszf" required> 
+            <input type="checkbox" id="accept-aszf" name="accept-aszf" required>
             <label for="accept-aszf">Elfogadom az ÁSZF-et</label>
         </div>
-
         <?php
         // projekt_id ellenőrzése
         $projekt_id = isset($_GET['projekt_id']) ? intval($_GET['projekt_id']) : null;
@@ -89,10 +82,8 @@ ob_start(); // kimenet pufferelése hogy ne egyből mentse az adatokat
             echo "Nincs projekt kiválasztva.";
             exit(); // nincs projekt
         }
-
         // adatb kapcsolódás
         require_once "db_connect.php";
-
         // ellenőrzés van-e már kitöltő session-ben
         if (!isset($_SESSION['kitolto_id_' . $projekt_id])) {
             // ha nincs, új kitöltő beszúrása
@@ -109,22 +100,18 @@ ob_start(); // kimenet pufferelése hogy ne egyből mentse az adatokat
             // ha már létezik, onnan vesszük
             $kitolto_id = $_SESSION['kitolto_id_' . $projekt_id];
         }
-
         // kérdések lekérése az adott projekthez
         $sqlKerdezsek = "SELECT * FROM kerdesek WHERE projekt_id = ?";
         $stmt = $conn->prepare($sqlKerdezsek);
         $stmt->bind_param("i", $projekt_id);
         $stmt->execute();
         $result = $stmt->get_result();
-
         // ha nincs kérdés
         if ($result->num_rows == 0) {
             echo '<p>Itt nincs kérdés.</p>';
         }
-
         // űrlap megjelenítése
         echo '<form action="" method="post" onsubmit="return validateForm()">';
-
         while ($row = $result->fetch_assoc()) {
             $kerdes = htmlspecialchars($row['kerdes']);
             $required = $row['required']; // kötelező-e
@@ -133,10 +120,8 @@ ob_start(); // kimenet pufferelése hogy ne egyből mentse az adatokat
                 echo ' <span style="color: red;">*</span>'; // ha kötelező, csillag
             }
             echo '</label>';
-
             $valasz_tipus = $row['valasz_tipus']; // válasz típusa
             echo '<div class="question-container">';
-
             // válasz típusok kezelése
             if ($valasz_tipus == 'enum') {
                 // legördülő menü
@@ -160,18 +145,14 @@ ob_start(); // kimenet pufferelése hogy ne egyből mentse az adatokat
                 // dátum
                 echo '<input type="date" name="valasz[' . $row['id'] . ']" min="1900-01-01" max="2020-01-01"' . ($required == 1 ? ' required' : '') . '>';
             }
-
             echo '</div>'; // question-container vége
         }
-
         // gombok
         echo '<div class="button-container">';
         echo '<a class="back-button" href="projektek.php">Vissza a projektekhez</a>'; // vissza
         echo '<button class="continue-button" type="submit">Tovább</button>'; // tovább
         echo '</div>';
-
         echo '</form>';
-
         // ha elküldték a formot
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             foreach ($_POST['valasz'] as $kerdes_id => $valasz) {
@@ -181,14 +162,13 @@ ob_start(); // kimenet pufferelése hogy ne egyből mentse az adatokat
             header("Location: fajlok_ertekelese.php?projekt_id=" . $projekt_id . "&current_file=1");
             exit();
         }
-
         $stmt->close(); // lekérdezés lezárása
         $conn->close(); // adatb kapcsolat zárása
         ?>
     </div>
 </body>
-</html>
 
+</html>
 <?php
 ob_end_flush(); // puffer lezárása
 ?>

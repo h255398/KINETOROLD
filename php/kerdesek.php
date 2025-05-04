@@ -1,26 +1,20 @@
 <?php
 session_start(); //EZT HOL HAZSNALOM MEGKERESNI
-
 // felh bejel ell
 if (!isset($_SESSION['felhasznalonev'])) {
     header("Location: bejelentkezes.php");
     exit();
 }
-
 // adatb kapcs
 require_once "db_connect.php";
-
 $messages = []; // üzenetek tárolására
-
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $projectId = isset($_POST['project_id']) ? $_POST['project_id'] : null; // projekt ID
-
     if (!empty($_POST['questions'])) { // ha van kérdés mező
         foreach ($_POST['questions'] as $question) {
             $kerdes = isset($question['kerdes']) ? $conn->real_escape_string($question['kerdes']) : '';
             $valaszTipus = isset($question['valasz_tipus']) ? $conn->real_escape_string($question['valasz_tipus']) : '';
             $lehetsegesValaszok = isset($question['lehetseges_valaszok']) ? $conn->real_escape_string($question['lehetseges_valaszok']) : '';
-
             if (!empty($kerdes) && !empty($valaszTipus)) {
                 // csak akkor ellenőrizzük a lehetseges_valaszok mezőt, ha a válasz típusa enum
                 if ($valaszTipus === 'enum' && empty($lehetsegesValaszok)) {
@@ -28,9 +22,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     continue; // kövi kérdés
                 }
                 // beszúrás
-                $sqlQuestion = "INSERT INTO kerdesek (projekt_id, kerdes, valasz_tipus, lehetseges_valaszok) 
+                $sqlQuestion = "INSERT INTO kerdesek (projekt_id, kerdes, valasz_tipus, lehetseges_valaszok)
                 VALUES ($projectId, '$kerdes', '$valaszTipus', '$lehetsegesValaszok')";
-
                 if ($conn->query($sqlQuestion) === FALSE) {
                     $messages[] = "Hiba a kérdés mentésekor: " . $conn->error;
                 } else {
@@ -53,7 +46,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="hu">
 
@@ -68,6 +60,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             color: red;
             margin: 10px 0;
         }
+
         .success {
             color: green;
         }
@@ -77,7 +70,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         function addQuestion() {
             const questionContainer = document.createElement('div');
             questionContainer.classList.add('question-container');
-
             questionContainer.innerHTML = `
                 <label for="question">Kérdés:</label>
                 <input type="text" name="questions[][kerdes]" required>
@@ -94,7 +86,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </div>
                 <span class="remove-question" onclick="removeQuestion(this)">X</span>
             `;
-
             questionContainer.querySelector('select[name="questions[][valasz_tipus]"]').addEventListener('change', function () {
                 const enumOptions = questionContainer.querySelector('.enum-options');
                 if (this.value === 'enum') {
@@ -103,10 +94,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     enumOptions.style.display = 'none';
                 }
             });
-
             document.getElementById('questions').appendChild(questionContainer);
         }
-
         function removeQuestion(element) {
             const questionContainer = element.parentElement;
             questionContainer.remove();
@@ -121,19 +110,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <a href="regisztracio.php">Kijelentkezés</a>
         </div>
     </header>
-
     <nav>
         <ul>
             <li><a href="projektjeim.php">Projektjeim</a></li>
             <li><a href="ujprojekt.php">Új projekt</a></li>
         </ul>
     </nav>
-
     <div class="content">
         <div class="form-container">
             <h2>Kérdések hozzáadása a projekthez</h2>
-
-            
             <div id="message-container">
                 <?php if (!empty($messages)): ?>
                     <?php foreach ($messages as $message): ?>
@@ -141,7 +126,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <?php endforeach; ?>
                 <?php endif; ?>
             </div>
-
             <form action="kerdesek.php" method="post">
                 <input type="hidden" name="project_id" value="1">
                 <h3>Kérdések:</h3>
@@ -154,7 +138,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </body>
 
 </html>
-
 <?php
-$conn->close(); 
+$conn->close();
 ?>

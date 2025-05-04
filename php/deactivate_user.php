@@ -10,7 +10,6 @@ if (isset($_GET['id'])) { //ell az id-t és kinyerni
     $userId = $_GET['id'];
     // adatb kapcs
     require_once "db_connect.php";
-
     // létezik e a felhaszn.
     $sql = "SELECT felhasznalonev FROM felhasznalok WHERE id = '$userId'";
     $result = $conn->query($sql);

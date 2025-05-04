@@ -1,21 +1,17 @@
 <?php
 session_start();
-
 // ell, hogy az admin be van-e jelentkezve
 if (!isset($_SESSION['felhasznalonev']) || $_SESSION['felhasznalonev'] !== 'admin') {
     // ha nem admin
     header('Location: bejelentkezes.php');
     exit();
 }
-
 // adatb kapcs
 require_once "db_connect.php";
-
 // felhasználók lekérése kivéve admin
 $sql = "SELECT id, felhasznalonev, email, letiltva FROM felhasznalok WHERE felhasznalonev != 'admin'";
 $result = $conn->query($sql);
 ?>
-
 <!DOCTYPE html>
 <html lang="hu">
 
@@ -24,15 +20,12 @@ $result = $conn->query($sql);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin</title>
     <link rel="stylesheet" href="../css2/kezdolap.css?v=1.1">
-
     <link rel="stylesheet" href="../css2/felhasznalok.css?v=1.1">
     <style>
-
     </style>
 </head>
 
 <body>
-
     <header>
         <h1>Projektértékelő</h1>
         <div class="auth-links">
@@ -65,12 +58,10 @@ $result = $conn->query($sql);
                         $email = htmlspecialchars($row['email']);
                         $userId = $row['id'];
                         $isDeactivated = $row['letiltva'];
-
                         // letilt felold gomb
                         $actionUrl = $isDeactivated ? "feloldas.php?id=$userId" : "deactivate_user.php?id=$userId";
                         $buttonClass = $isDeactivated ? "activate" : "deactivate";
                         $buttonText = $isDeactivated ? "Feloldás" : "Letiltás";
-
                         echo "<tr>
                             <td>$username</td>
                             <td>$email</td>
@@ -80,13 +71,11 @@ $result = $conn->query($sql);
                 } else {
                     echo "<tr><td colspan='3'>Nincs felhasználó az adatbázisban.</td></tr>";
                 }
-
                 $conn->close();
                 ?>
             </tbody>
         </table>
     </div>
-
 </body>
 
 </html>

@@ -1,20 +1,17 @@
 <?php
 session_start();
-
 // adatb kapcs
 require_once "db_connect.php";
-
-// projekt ID 
+// projekt ID
 $projekt_id = isset($_GET['projekt_id']) ? intval($_GET['projekt_id']) : null;
 if ($projekt_id === null) {
     echo "Nincs projekt kiválasztva.";
     exit();
 }
-
 //fajlok tipusa lekérése
 $check_files_stmt = $conn->prepare("
-    SELECT DISTINCT tipus 
-    FROM fajlok 
+    SELECT DISTINCT tipus
+    FROM fajlok
     WHERE projekt_id = ?
 ");
 $check_files_stmt->bind_param("i", $projekt_id);
@@ -22,17 +19,16 @@ $check_files_stmt->execute();
 $file_types_result = $check_files_stmt->get_result();
 $file_types = $file_types_result->fetch_all(MYSQLI_ASSOC);
 $check_files_stmt->close();
-
 // ha csak képek
 if (in_array(['tipus' => 'kep'], $file_types)) {
     // képek lekérdezése átlag pontszám és csak 3at jelenít meg
     $top_images_stmt = $conn->prepare("
-        SELECT fajl_nev, ROUND(AVG(pontszam), 2) as atlag_pontszam 
-        FROM ertekelt_fajlok 
-        INNER JOIN fajlok ON ertekelt_fajlok.fajl_id = fajlok.id 
-        WHERE fajlok.tipus = 'kep' AND fajlok.projekt_id = ? 
-        GROUP BY fajlok.id 
-        ORDER BY atlag_pontszam DESC 
+        SELECT fajl_nev, ROUND(AVG(pontszam), 2) as atlag_pontszam
+        FROM ertekelt_fajlok
+        INNER JOIN fajlok ON ertekelt_fajlok.fajl_id = fajlok.id
+        WHERE fajlok.tipus = 'kep' AND fajlok.projekt_id = ?
+        GROUP BY fajlok.id
+        ORDER BY atlag_pontszam DESC
         LIMIT 3
     ");
     $top_images_stmt->bind_param("i", $projekt_id);
@@ -40,7 +36,6 @@ if (in_array(['tipus' => 'kep'], $file_types)) {
     $top_images_result = $top_images_stmt->get_result();
     $top_images = $top_images_result->fetch_all(MYSQLI_ASSOC);
     $top_images_stmt->close();
-
     // képek megjelenítése
     $media_section = '<h2>Top Képek</h2>';
     foreach ($top_images as $image) {
@@ -55,12 +50,12 @@ if (in_array(['tipus' => 'kep'], $file_types)) {
 elseif (in_array(['tipus' => 'video'], $file_types)) {
     // videók lekérdezése átlag pnt és csak 3at
     $top_videos_stmt = $conn->prepare("
-        SELECT fajl_nev, ROUND(AVG(pontszam), 2) as atlag_pontszam 
-        FROM ertekelt_fajlok 
-        INNER JOIN fajlok ON ertekelt_fajlok.fajl_id = fajlok.id 
-        WHERE fajlok.tipus = 'video' AND fajlok.projekt_id = ? 
-        GROUP BY fajlok.id 
-        ORDER BY atlag_pontszam DESC 
+        SELECT fajl_nev, ROUND(AVG(pontszam), 2) as atlag_pontszam
+        FROM ertekelt_fajlok
+        INNER JOIN fajlok ON ertekelt_fajlok.fajl_id = fajlok.id
+        WHERE fajlok.tipus = 'video' AND fajlok.projekt_id = ?
+        GROUP BY fajlok.id
+        ORDER BY atlag_pontszam DESC
         LIMIT 3
     ");
     $top_videos_stmt->bind_param("i", $projekt_id);
@@ -68,7 +63,6 @@ elseif (in_array(['tipus' => 'video'], $file_types)) {
     $top_videos_result = $top_videos_stmt->get_result();
     $top_videos = $top_videos_result->fetch_all(MYSQLI_ASSOC);
     $top_videos_stmt->close();
-
     // videók megjelenítése
     $media_section = '<h2>Top Videók</h2>';
     foreach ($top_videos as $video) {
@@ -82,15 +76,11 @@ elseif (in_array(['tipus' => 'video'], $file_types)) {
             </div>';
     }
 } else {
-   
     echo "Nincs képek vagy videók az adott projektben.";
     exit();
 }
-
-
 $conn->close();
 ?>
-
 <!DOCTYPE html>
 <html lang="hu">
 
@@ -150,17 +140,13 @@ $conn->close();
 </head>
 
 <body>
-
     <h1>Top 3 Legjobbra Értékelt Média</h1>
-
     <div class="top-media">
         <?php echo $media_section; ?>
     </div>
-
     <div class="button-container">
         <a href="../html/kezdolap.html" class="button">Vissza a Kezdőlapra</a>
     </div>
-
 </body>
 
 </html>
