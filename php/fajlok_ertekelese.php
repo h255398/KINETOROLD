@@ -186,7 +186,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['pontszam'])) {
         <h1>Köszönöm, hogy értékelésével segíti a szakdolgozatomat</h1>
     </header>
     <div class="container">
-        <p>Kérjük, értékelje a fájlt!</p> <strong>1-es a legrosszabb értékelés, 5-ös a legjobb értékelés.</strong>
+        <p>Kérjük, értékelje a fájlt!</p> <strong>1-es a legrosszabb értékelés, 5-ös a legjobb értékelés.</strong> <p>(Ha egy fájl rossz minőségű, torz, akkor kap 1-es értékelést, ha pedig tiszta, jó minőségű, akkor 5-ös.)</p>
         <h3><?php echo "$current_file / $total_files"; ?></h3>
         <?php
         // ell, hogy a fájl videó-e

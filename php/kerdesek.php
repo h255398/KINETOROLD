@@ -1,5 +1,5 @@
 <?php
-session_start(); //EZT HOL HAZSNALOM MEGKERESNI
+session_start(); //session ind.
 // felh bejel ell
 if (!isset($_SESSION['felhasznalonev'])) {
     header("Location: bejelentkezes.php");

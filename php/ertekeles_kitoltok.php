@@ -28,7 +28,7 @@ ob_start(); // kimenet pufferelése hogy ne egyből mentse az adatokat
             }
             return true;
         }
-        // dátum mező megjelenítés kezelése aptáras bigyó alapján
+        // dátum mező megjelenítés kezelése naptáras bigyó alapján
         function showDateInput(selectElem, questionId) {
             const questionContainer = selectElem.closest('.question-container');
             let dateInput = questionContainer.querySelector('input[type="date"]'); // dátum keres
